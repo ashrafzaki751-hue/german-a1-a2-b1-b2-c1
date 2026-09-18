@@ -1,985 +1,2671 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ÖSD Almanca Kelime Öğrenme Sistemi</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<title>Deutsch A1 → C1 | الألمانية من الصفر إلى الاحتراف</title>
+
 <style>
-  :root{
-    --bg:#F6F5EF;
-    --surface:#FFFFFF;
-    --surface-2:#EFEDE3;
-    --ink:#232A25;
-    --ink-soft:#6B7570;
-    --line:#E3E0D2;
-    --teal:#1F7A6C;
-    --teal-dark:#155A50;
-    --teal-tint:#E4F1EC;
-    --amber:#E29A3B;
-    --amber-tint:#FBEEDA;
-    --coral:#D96C4F;
-    --coral-tint:#FBEAE4;
-    --green:#3F9142;
-    --green-tint:#E7F3E4;
-    --radius:18px;
-    --shadow: 0 1px 2px rgba(35,42,37,0.04), 0 8px 24px rgba(35,42,37,0.06);
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
+:root{
+    --bg:#f5f7f9;
+    --card:#ffffff;
+    --text:#17212b;
+    --muted:#65727e;
+    --primary:#087f72;
+    --primary2:#0a9b8b;
+    --border:#dce3e8;
+    --soft:#eaf6f4;
+    --danger:#c0392b;
+    --shadow:0 8px 24px rgba(0,0,0,.07);
+}
+
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
     background:var(--bg);
-    color:var(--ink);
-    font-family:'Inter',system-ui,sans-serif;
-    -webkit-font-smoothing:antialiased;
-    min-height:100vh;
-  }
-  #app{max-width:760px;margin:0 auto;padding:20px 16px 64px;}
-  .eyebrow{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:var(--teal-dark);
-    font-weight:600;
-  }
-  h1,h2,h3{font-family:'Fraunces',serif; margin:0; font-weight:600;}
-  .top{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:6px 2px 22px;
-  }
-  .brand{display:flex;flex-direction:column;gap:3px;}
-  .brand h1{font-size:20px;letter-spacing:-.01em;}
-  .reset-btn{
-    background:none;border:1px solid var(--line);color:var(--ink-soft);
-    font-family:'Inter';font-size:12px;padding:7px 12px;border-radius:999px;cursor:pointer;
-  }
-  .reset-btn:hover{border-color:var(--coral);color:var(--coral);}
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;
+    line-height:1.7;
+}
 
-  /* ---- Module path (module list) ---- */
-  .path{position:relative;padding:8px 0 8px 34px;}
-  .path::before{
-    content:'';position:absolute;left:15px;top:26px;bottom:26px;width:2px;
-    background:repeating-linear-gradient(to bottom, var(--line) 0 6px, transparent 6px 12px);
-  }
-  .node{position:relative;display:flex;gap:16px;align-items:flex-start;margin-bottom:14px;}
-  .node-dot{
-    position:absolute;left:-34px;top:2px;width:32px;height:32px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    font-family:'IBM Plex Mono';font-size:12px;font-weight:600;
-    background:var(--surface);border:2px solid var(--line);color:var(--ink-soft);
-    z-index:1;
-  }
-  .node-dot.done{background:var(--teal);border-color:var(--teal);color:#fff;}
-  .node-dot.current{background:var(--amber-tint);border-color:var(--amber);color:var(--amber);}
-  .card-module{
-    flex:1;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-    padding:14px 16px;box-shadow:var(--shadow);cursor:pointer;transition:transform .12s ease;
-  }
-  .card-module.locked{opacity:.5;cursor:not-allowed;}
-  .card-module:not(.locked):hover{transform:translateY(-1px);}
-  .card-module-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
-  .card-module h3{font-size:16px;}
-  .card-module .cat{font-size:12px;color:var(--ink-soft);margin-top:2px;}
-  .progress-track{height:5px;background:var(--surface-2);border-radius:99px;margin-top:10px;overflow:hidden;}
-  .progress-fill{height:100%;background:var(--teal);border-radius:99px;}
-  .pill{
-    font-family:'IBM Plex Mono';font-size:11px;color:var(--ink-soft);
-    background:var(--surface-2);padding:2px 8px;border-radius:99px;white-space:nowrap;
-  }
-  .pill.done{background:var(--green-tint);color:var(--green);}
+button,
+input{
+    font:inherit;
+}
 
-  /* ---- Lesson header / progress ---- */
-  .lesson-head{margin-bottom:18px;}
-  .lesson-head-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-  .back-link{font-size:13px;color:var(--ink-soft);cursor:pointer;text-decoration:none;}
-  .back-link:hover{color:var(--teal-dark);}
-  .stage-badge{
-    font-family:'IBM Plex Mono';font-size:11px;font-weight:600;letter-spacing:.06em;
-    background:var(--teal-tint);color:var(--teal-dark);padding:4px 10px;border-radius:99px;
-  }
-  .rep-track{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;}
-  .rep-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--amber));border-radius:99px;transition:width .3s ease;}
-  .lesson-title{font-size:22px;margin-top:10px;}
+button{
+    cursor:pointer;
+}
 
-  /* ---- Generic stage card ---- */
-  .stage-card{
-    background:var(--surface);border:1px solid var(--line);border-radius:24px;
-    padding:32px 24px;box-shadow:var(--shadow);text-align:center;min-height:260px;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
-  }
-  .word-de{font-family:'Fraunces',serif;font-size:38px;font-weight:600;letter-spacing:-.01em;}
-  .word-tr{font-size:19px;color:var(--teal-dark);font-weight:500;}
-  .divider-line{width:36px;height:2px;background:var(--amber);border-radius:2px;}
+.container{
+    width:min(1100px,94%);
+    margin:auto;
+}
 
-  /* focus ring for HÖM */
-  .ring-wrap{position:relative;width:150px;height:150px;margin:0 auto 6px;}
-  .ring-wrap svg{transform:rotate(-90deg);}
-  .ring-bg{fill:none;stroke:var(--surface-2);stroke-width:6;}
-  .ring-fg{fill:none;stroke:var(--amber);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .1s linear;}
-  .ring-center{
-    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  }
+/* HEADER */
 
-  .btn{
-    font-family:'Inter';font-weight:600;font-size:14px;border:none;border-radius:12px;
-    padding:12px 22px;cursor:pointer;transition:transform .08s ease, background .15s ease;
-  }
-  .btn:active{transform:scale(.97);}
-  .btn-primary{background:var(--teal);color:#fff;}
-  .btn-primary:hover{background:var(--teal-dark);}
-  .btn-ghost{background:var(--surface-2);color:var(--ink);}
-  .btn-ghost:hover{background:var(--line);}
-  .btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-  .btn:disabled{opacity:.45;cursor:not-allowed;}
+header{
+    background:linear-gradient(135deg,#075e55,#0a9b8b);
+    color:white;
+    padding:28px 0 24px;
+    box-shadow:var(--shadow);
+}
 
-  .input-row{display:flex;gap:8px;width:100%;max-width:340px;}
-  input[type=text]{
-    flex:1;font-family:'Inter';font-size:16px;padding:12px 14px;border-radius:12px;
-    border:1.5px solid var(--line);background:var(--bg);color:var(--ink);
-  }
-  input[type=text]:focus{outline:none;border-color:var(--teal);}
-  .feedback{font-size:14px;font-weight:600;min-height:20px;}
-  .feedback.ok{color:var(--green);}
-  .feedback.bad{color:var(--coral);}
-  .hint{font-size:12px;color:var(--ink-soft);}
+.header-inner{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+}
 
-  /* match grid */
-  .match-grid{display:flex;gap:14px;width:100%;justify-content:center;}
-  .match-col{display:flex;flex-direction:column;gap:8px;flex:1;max-width:280px;}
-  .match-tile{
-    background:var(--surface-2);border:1.5px solid transparent;border-radius:10px;padding:10px 12px;
-    font-size:14px;cursor:pointer;text-align:left;transition:all .12s ease;
-  }
-  .match-tile.selected{border-color:var(--amber);background:var(--amber-tint);}
-  .match-tile.correct{border-color:var(--green);background:var(--green-tint);color:var(--green);cursor:default;}
-  .match-tile.wrong{border-color:var(--coral);background:var(--coral-tint);}
-  .match-tile.hidden-match{visibility:hidden;}
+h1{
+    margin:0 0 5px;
+    font-size:clamp(25px,5vw,40px);
+}
 
-  .mc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:420px;}
-  .mc-opt{
-    background:var(--surface-2);border:1.5px solid transparent;border-radius:12px;padding:12px 10px;
-    font-size:14px;cursor:pointer;text-align:center;
-  }
-  .mc-opt.correct{border-color:var(--green);background:var(--green-tint);color:var(--green);}
-  .mc-opt.wrong{border-color:var(--coral);background:var(--coral-tint);color:var(--coral);}
-  .mc-opt.disabled{cursor:default;}
+.subtitle{
+    margin:0;
+    opacity:.9;
+}
 
-  .example-block{width:100%;text-align:left;background:var(--surface-2);border-radius:14px;padding:16px 18px;}
-  .example-de{font-family:'Fraunces',serif;font-size:19px;margin-bottom:4px;}
-  .example-tr{font-size:14px;color:var(--ink-soft);}
+.header-buttons{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
 
-  .counter{font-family:'IBM Plex Mono';font-size:12px;color:var(--ink-soft);}
-  .score-tag{font-family:'IBM Plex Mono';font-size:13px;font-weight:600;}
+.header-buttons button{
+    border:1px solid rgba(255,255,255,.3);
+    background:rgba(255,255,255,.13);
+    color:#fff;
+    padding:9px 13px;
+    border-radius:12px;
+}
 
-  .complete-wrap{text-align:center;padding:50px 16px;}
-  .complete-wrap h2{font-size:26px;margin-bottom:8px;}
-  .complete-wrap p{color:var(--ink-soft);font-size:14px;margin-bottom:20px;}
+/* PROGRESS */
 
-  .empty-note{text-align:center;color:var(--ink-soft);font-size:13px;padding:30px 0;}
-  @media (max-width:480px){
-    .word-de{font-size:30px;}
-    .mc-grid{grid-template-columns:1fr;}
-  }
+.progress-wrap{
+    margin:18px auto;
+}
+
+.progress-info{
+    display:flex;
+    justify-content:space-between;
+    font-size:14px;
+    color:var(--muted);
+    margin-bottom:6px;
+}
+
+.progress{
+    height:9px;
+    background:#dfe7ea;
+    border-radius:99px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:var(--primary);
+    transition:.3s;
+}
+
+/* SEARCH */
+
+.search-box{
+    margin:20px 0;
+    position:relative;
+}
+
+.search-box input{
+    width:100%;
+    padding:15px 18px;
+    border:1px solid var(--border);
+    border-radius:15px;
+    background:var(--card);
+    color:var(--text);
+    outline:none;
+    box-shadow:0 3px 12px rgba(0,0,0,.03);
+}
+
+.search-box input:focus{
+    border-color:var(--primary);
+}
+
+/* LEVEL NAV */
+
+.level-nav{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:5px;
+    margin-bottom:20px;
+}
+
+.level-btn{
+    flex:0 0 auto;
+    border:1px solid var(--border);
+    background:var(--card);
+    color:var(--text);
+    padding:10px 17px;
+    border-radius:12px;
+}
+
+.level-btn.active{
+    background:var(--primary);
+    color:#fff;
+    border-color:var(--primary);
+}
+
+/* CARDS */
+
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:15px;
+    box-shadow:0 4px 15px rgba(0,0,0,.035);
+}
+
+.card h2,
+.card h3{
+    margin-top:0;
+}
+
+.section-title{
+    margin:28px 0 12px;
+}
+
+/* LESSON */
+
+.lesson{
+    overflow:hidden;
+}
+
+.lesson-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+}
+
+.lesson-number{
+    color:var(--primary);
+    font-weight:800;
+}
+
+.lesson-content{
+    margin-top:16px;
+}
+
+details{
+    background:var(--soft);
+    border-radius:14px;
+    margin:10px 0;
+    overflow:hidden;
+}
+
+summary{
+    padding:13px 16px;
+    cursor:pointer;
+    font-weight:700;
+}
+
+.details-content{
+    padding:0 16px 16px;
+}
+
+/* VOCAB */
+
+.vocab{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:10px;
+}
+
+.word{
+    border:1px solid var(--border);
+    background:var(--card);
+    border-radius:14px;
+    padding:14px;
+}
+
+.word-main{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.german{
+    direction:ltr;
+    text-align:left;
+    font-size:20px;
+    font-weight:800;
+}
+
+.meaning{
+    color:var(--text);
+    margin-top:4px;
+}
+
+.pron{
+    color:#087f72;
+    font-size:14px;
+    margin-top:3px;
+}
+
+.example{
+    border-top:1px solid var(--border);
+    margin-top:10px;
+    padding-top:10px;
+}
+
+.example-de{
+    direction:ltr;
+    text-align:left;
+    font-weight:700;
+}
+
+.example-ar{
+    font-size:14px;
+    margin-top:3px;
+}
+
+.example-pron{
+    color:var(--muted);
+    font-size:13px;
+}
+
+.speak{
+    border:0;
+    width:44px;
+    height:44px;
+    min-width:44px;
+    border-radius:50%;
+    background:var(--primary);
+    color:#fff;
+    font-size:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    touch-action:manipulation;
+}
+
+.speak:active{
+    transform:scale(.94);
+    background:#05665c;
+}
+
+/* DIALOGUE */
+
+.dialogue{
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:14px;
+    margin:10px 0;
+}
+
+.dialogue-line{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:10px;
+    align-items:center;
+    margin-bottom:12px;
+}
+
+.dialogue-line:last-child{
+    margin-bottom:0;
+}
+
+.speaker{
+    color:var(--primary);
+    font-weight:800;
+}
+
+.dialogue-de{
+    direction:ltr;
+    text-align:left;
+    font-weight:700;
+}
+
+.dialogue-ar{
+    font-size:14px;
+}
+
+.dialogue-pron{
+    color:var(--muted);
+    font-size:13px;
+}
+
+/* GRAMMAR */
+
+.grammar-box{
+    background:#fffdf3;
+    border:1px solid #eee1a8;
+    border-radius:14px;
+    padding:15px;
+    margin:10px 0;
+}
+
+.dark .grammar-box{
+    background:#292818;
+    border-color:#625b2c;
+}
+
+.formula{
+    direction:ltr;
+    text-align:left;
+    background:rgba(0,0,0,.04);
+    border-radius:10px;
+    padding:10px;
+    margin:8px 0;
+    font-family:monospace;
+}
+
+/* QUIZ */
+
+.quiz-question{
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    margin-bottom:12px;
+}
+
+.quiz-option{
+    display:block;
+    width:100%;
+    text-align:right;
+    margin:7px 0;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    background:var(--card);
+    border-radius:10px;
+}
+
+.quiz-option.correct{
+    background:#dff5e8;
+    border-color:#35a96b;
+}
+
+.quiz-option.wrong{
+    background:#fde4e1;
+    border-color:#d95b50;
+}
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.65);
+    z-index:9999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:min(520px,100%);
+    background:var(--card);
+    color:var(--text);
+    border-radius:20px;
+    padding:24px;
+    max-height:90vh;
+    overflow:auto;
+}
+
+.modal-box h2{
+    margin-top:0;
+}
+
+.modal-btn{
+    width:100%;
+    border:0;
+    background:var(--primary);
+    color:white;
+    padding:14px;
+    border-radius:13px;
+    margin-top:10px;
+}
+
+/* FOOTER */
+
+footer{
+    text-align:center;
+    color:var(--muted);
+    padding:35px 15px;
+}
+
+/* DARK */
+
+.dark{
+    --bg:#101416;
+    --card:#181d20;
+    --text:#edf2f4;
+    --muted:#aab6bd;
+    --border:#2b3439;
+    --soft:#162c29;
+    --shadow:0 8px 25px rgba(0,0,0,.25);
+}
+
+.dark .progress{
+    background:#293237;
+}
+
+.dark .search-box input{
+    background:var(--card);
+}
+
+.dark .quiz-option{
+    background:var(--card);
+}
+
+.dark .quiz-option.correct{
+    background:#173d29;
+}
+
+.dark .quiz-option.wrong{
+    background:#44211e;
+}
+
+/* HIDDEN */
+
+.hidden{
+    display:none!important;
+}
+
+/* MOBILE */
+
+@media(max-width:650px){
+
+    .container{
+        width:92%;
+    }
+
+    .header-inner{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .header-buttons{
+        justify-content:flex-start;
+    }
+
+    .card{
+        padding:15px;
+        border-radius:15px;
+    }
+
+    .vocab{
+        grid-template-columns:1fr;
+    }
+
+    .german{
+        font-size:19px;
+    }
+
+    .dialogue-line{
+        grid-template-columns:1fr auto;
+    }
+}
+
+/* PRINT / PDF */
+
+@media print{
+
+    @page{
+        size:A4 landscape;
+        margin:10mm;
+    }
+
+    body{
+        background:white!important;
+        color:black!important;
+        font-size:10pt;
+    }
+
+    header{
+        background:white!important;
+        color:black!important;
+        box-shadow:none;
+    }
+
+    .header-buttons,
+    .search-box,
+    .level-nav,
+    .speak,
+    .modal,
+    footer{
+        display:none!important;
+    }
+
+    .card{
+        box-shadow:none;
+        break-inside:avoid;
+        border:1px solid #ccc;
+    }
+
+    details{
+        break-inside:avoid;
+    }
+}
 </style>
 </head>
+
 <body>
-<div id="app"></div>
+
+<header>
+<div class="container header-inner">
+
+<div>
+<h1>🇩🇪 Deutsch A1 → C1</h1>
+<p class="subtitle">الألمانية من الصفر إلى المستوى المتقدم</p>
+</div>
+
+<div class="header-buttons">
+<button type="button" onclick="toggleDark()">🌙 الوضع الليلي</button>
+<button type="button" onclick="window.print()">🖨️ PDF / طباعة</button>
+<button type="button" onclick="showVoiceHelp()">🔊 إعداد الصوت</button>
+</div>
+
+</div>
+</header>
+
+<main class="container">
+
+<div class="progress-wrap">
+<div class="progress-info">
+<span>التقدم</span>
+<span id="progressText">0%</span>
+</div>
+<div class="progress">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+
+<div class="search-box">
+<input
+id="search"
+type="search"
+placeholder="ابحث عن كلمة ألمانية أو معناها بالعربية..."
+autocomplete="off">
+</div>
+
+<div class="level-nav">
+<button class="level-btn active" data-level="all">الكل</button>
+<button class="level-btn" data-level="A1">A1</button>
+<button class="level-btn" data-level="A2">A2</button>
+<button class="level-btn" data-level="B1">B1</button>
+<button class="level-btn" data-level="B2">B2</button>
+<button class="level-btn" data-level="C1">C1</button>
+</div>
+
+<section id="book"></section>
+
+</main>
+
+<footer>
+Deutsch A1 → C1 • كتاب ألماني تفاعلي • يعمل بدون مكتبات خارجية
+</footer>
+
+
+<!-- VOICE MODAL -->
+
+<div class="modal" id="voiceModal">
+<div class="modal-box">
+
+<h2>🇩🇪 إعداد النطق الألماني على iPhone</h2>
+
+<p>
+الكتاب ينطق <strong>النص الألماني فقط</strong>.
+الترجمة العربية والنطق المكتوب بالعربي لا يتم تحويلهما إلى صوت.
+</p>
+
+<ol>
+<li>افتح الملف باستخدام <strong>Safari</strong> على iPhone.</li>
+<li>تأكد من وجود صوت ألماني في إعدادات الجهاز.</li>
+<li>يمكنك من إعدادات iPhone البحث عن أصوات اللغة الألمانية وتنزيل صوت محسن إذا أردت.</li>
+<li>بعد ذلك اضغط زر 🔊 الموجود بجوار أي كلمة أو جملة.</li>
+</ol>
+
+<div class="grammar-box">
+<strong>اختبار سريع:</strong>
+<p style="direction:ltr;text-align:left;font-size:22px">
+Hallo! Wie geht es dir?
+</p>
+
+<button
+type="button"
+class="modal-btn"
+onclick="speakGerman('Hallo! Wie geht es dir?')">
+🔊 اختبار الصوت الألماني
+</button>
+</div>
+
+<button
+type="button"
+class="modal-btn"
+onclick="closeVoiceHelp()">
+إغلاق
+</button>
+
+</div>
+</div>
+
 
 <script>
-/* =========================================================
-   VERİ MODELİ: Kelimeler ve modüller tamamen kullanıcı
-   tarafından eklenir/silinir. Uygulama içinde hazır kelime
-   listesi yoktur; her modüle en fazla 13 kelime eklenebilir.
-   ========================================================= */
-const MAX_WORDS_PER_MODULE = 13;
-let MODULES = []; // [{id, words:[{de, tr:[...]}]}]
-
-function exampleFor(w){
-  return ["Ich möchte oft "+w.de+".", "Sık sık "+(w.tr[0]||'')+" istiyorum."];
-}
-
-function newModuleId(){ return 'm'+Date.now()+Math.floor(Math.random()*10000); }
-
-const STAGE_TYPES = ['HÖM','TAHMİN','TERS','EŞLEŞTİRME','BOŞLUK DOLDURMA','ÖRNEKLER','MİNİ TEST'];
-const REPS = 14;
-const STEPS_PER_MODULE = STAGE_TYPES.length * REPS; // 98
 
 /* =========================================================
-   YARDIMCI FONKSİYONLAR
+   AUDIO
+   أهم تعديل:
+   - لا يوجد setTimeout
+   - لا يوجد اختيار voice يدوي
+   - speak() يعمل مباشرة بعد ضغط المستخدم
    ========================================================= */
-function seededRandom(seed){
-  let s = seed % 2147483647; if(s<=0) s += 2147483646;
-  return function(){ s = (s*16807) % 2147483647; return (s-1)/2147483646; };
-}
-function seededShuffle(arr, seed){
-  const rnd = seededRandom(seed+1);
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(rnd()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
-function normalizeTr(str){
-  return (str||'')
-    .toLocaleLowerCase('tr')
-    .replace(/-/g,' ')
-    .replace(/[().,;:!?'"]/g,'')
-    .replace(/\s+/g,' ')
-    .trim();
-}
-function normalizeDe(str){
-  return (str||'').toLocaleLowerCase('de').trim();
-}
-function isCorrectTr(input, acceptedList){
-  const n = normalizeTr(input);
-  if(!n) return false;
-  return acceptedList.some(a => normalizeTr(a)===n);
-}
 
-/* =========================================================
-   KALICI DEPOLAMA — güvenli sarmalayıcı
-   Öncelik: window.storage (Claude içi) → localStorage (GitHub
-   Pages / normal web barındırma) → bellek içi yedek.
-   ========================================================= */
-const memFallback = {};
-function hasClaudeStorage(){ return typeof window!=='undefined' && !!window.storage; }
-function hasLocalStorage(){
-  try{
-    if(typeof window==='undefined' || !window.localStorage) return false;
-    const t='__osd_test__'; window.localStorage.setItem(t,'1'); window.localStorage.removeItem(t);
-    return true;
-  }catch(e){ return false; }
-}
-async function storeGet(key){
-  try{
-    if(hasClaudeStorage()){
-      const r = await window.storage.get(key, false);
-      return r ? JSON.parse(r.value) : null;
+function speakGerman(text){
+
+    if(!("speechSynthesis" in window)){
+        alert(
+            "ميزة النطق غير متاحة هنا.\n\n" +
+            "افتح الكتاب مباشرة في Safari على iPhone."
+        );
+        return;
     }
-  }catch(e){ /* devam et, diğer yöntemleri dene */ }
-  try{
-    if(hasLocalStorage()){
-      const v = window.localStorage.getItem('osd:'+key);
-      return v ? JSON.parse(v) : null;
-    }
-  }catch(e){ /* devam et */ }
-  return memFallback[key] !== undefined ? memFallback[key] : null;
+
+    var utterance = new SpeechSynthesisUtterance(String(text));
+
+    /*
+       نحدد اللغة فقط.
+       لا نستخدم getVoices() لاختيار صوت يدويًا،
+       لأن Safari قد لا يعرض كل الأصوات المثبتة في القائمة.
+    */
+
+    utterance.lang = "de-DE";
+    utterance.rate = 0.82;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    /*
+       مهم جدًا على iPhone:
+       تشغيل speak مباشرة من event الخاص بالزر.
+    */
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.resume();
+    window.speechSynthesis.speak(utterance);
 }
-async function storeSet(key, value){
-  memFallback[key] = value;
-  try{
-    if(hasClaudeStorage()){ await window.storage.set(key, JSON.stringify(value), false); return; }
-  }catch(e){ /* localStorage'a düş */ }
-  try{
-    if(hasLocalStorage()){ window.localStorage.setItem('osd:'+key, JSON.stringify(value)); return; }
-  }catch(e){ /* sadece bellekte kalır */ }
-}
-async function storeDelete(key){
-  delete memFallback[key];
-  try{ if(hasClaudeStorage()) await window.storage.delete(key, false); }catch(e){}
-  try{ if(hasLocalStorage()) window.localStorage.removeItem('osd:'+key); }catch(e){}
-}
+
 
 /* =========================================================
-   UYGULAMA DURUMU
+   VOICE HELP
    ========================================================= */
-let PROGRESS = null; // { m0:{step:0, done:false}, ... }
-let SCREEN = 'loading'; // loading | list | edit | lesson | modulecomplete
-let CUR_MODULE = 0;
-let EDIT_MODULE = 0;
-let RENAME_IDX = null;
-let session = null; // aktif ders adımı için geçici durum
-let activeTimer = null;
 
-function clearActiveTimer(){ if(activeTimer){ clearInterval(activeTimer); activeTimer=null; } }
-
-function defaultProgress(){
-  const p = {};
-  MODULES.forEach(m=> p[m.id] = {step:0, done:false});
-  return p;
+function showVoiceHelp(){
+    document.getElementById("voiceModal").classList.add("show");
 }
 
-async function loadProgress(){
-  const saved = await storeGet('osd_data_v2');
-  if(saved && Array.isArray(saved.modules)){
-    MODULES = saved.modules;
-    PROGRESS = saved.progress || {};
-  } else {
-    MODULES = [];
-    PROGRESS = {};
-  }
-  MODULES.forEach(m=>{
-    if(!PROGRESS[m.id]) PROGRESS[m.id] = {step:0, done:false};
-    if(typeof m.name !== 'string') m.name = '';
-  });
-}
-async function saveProgress(){ await storeSet('osd_data_v2', {modules:MODULES, progress:PROGRESS}); }
-
-function isUnlocked(idx){
-  return true; // tüm modüllerin kilidi kaldırıldı
+function closeVoiceHelp(){
+    document.getElementById("voiceModal").classList.remove("show");
 }
 
-function moduleLabel(m, idx){
-  return (m && m.name && m.name.trim()) ? m.name.trim() : ('Modül '+(idx+1));
-}
-
-/* ---- Modül ve kelime yönetimi (kullanıcı kontrollü) ---- */
-async function addModule(){
-  const id = newModuleId();
-  MODULES.push({id, name:'', words:[]});
-  PROGRESS[id] = {step:0, done:false};
-  await saveProgress();
-  EDIT_MODULE = MODULES.length-1;
-  SCREEN = 'edit';
-  render();
-}
-async function deleteModule(idx){
-  const m = MODULES[idx];
-  if(!confirm('"'+moduleLabel(m,idx)+'" ve içindeki tüm kelimeler silinsin mi?')) return;
-  delete PROGRESS[m.id];
-  MODULES.splice(idx,1);
-  await saveProgress();
-  SCREEN='list';
-  render();
-}
-async function renameModule(idx, newName){
-  const m = MODULES[idx];
-  if(!m) return;
-  m.name = (newName||'').trim().slice(0,40);
-  await saveProgress();
-  RENAME_IDX = null;
-  render();
-}
-async function addWordToModule(idx, de, trRaw){
-  const m = MODULES[idx];
-  if(!m) return;
-  if(m.words.length >= MAX_WORDS_PER_MODULE){ alert('Bu modülde en fazla '+MAX_WORDS_PER_MODULE+' kelime olabilir.'); return; }
-  de = (de||'').trim();
-  const tr = (trRaw||'').split(',').map(s=>s.trim()).filter(Boolean);
-  if(!de || tr.length===0){ alert('Lütfen hem Almanca hem Türkçe alanını doldur.'); return; }
-  m.words.push({de, tr});
-  await saveProgress();
-  render();
-}
-async function removeWordFromModule(idx, wordIdx){
-  const m = MODULES[idx];
-  if(!m) return;
-  m.words.splice(wordIdx,1);
-  await saveProgress();
-  render();
-}
 
 /* =========================================================
-   RENDER: KÖK
+   DARK MODE
    ========================================================= */
-const root = document.getElementById('app');
 
-function render(){
-  clearActiveTimer();
-  if(SCREEN==='loading'){ root.innerHTML = '<div class="empty-note">Yükleniyor...</div>'; return; }
-  if(SCREEN==='list'){ root.innerHTML = renderList(); attachListEvents(); return; }
-  if(SCREEN==='edit'){ root.innerHTML = renderEdit(); attachEditEvents(); return; }
-  if(SCREEN==='lesson'){ root.innerHTML = renderLesson(); attachLessonEvents(); return; }
-  if(SCREEN==='modulecomplete'){ root.innerHTML = renderModuleComplete(); attachCompleteEvents(); return; }
-}
+function toggleDark(){
 
-/* ---------------- MODÜL LİSTESİ ---------------- */
-function renderList(){
-  let html = `
-  <div class="top">
-    <div class="brand">
-      <span class="eyebrow">ÖSD · A1 - A2 - B1 - B2 - C1</span>
-      <h1>Almanca Kelime Öğrenme Sistemi</h1>
-    </div>
-    <button class="reset-btn" id="resetBtn">İlerlemeyi sıfırla</button>
-  </div>
-  <div class="path">`;
-  MODULES.forEach((m,idx)=>{
-    const prog = PROGRESS[m.id];
-    const pct = Math.round((prog.step/STEPS_PER_MODULE)*100);
-    const dotClass = prog.done ? 'done' : 'current';
-    const dotContent = prog.done ? '✓' : (idx+1);
-    const hasWords = m.words.length>0;
-    html += `
-    <div class="node">
-      <div class="node-dot ${dotClass}">${dotContent}</div>
-      <div class="card-module">
-        <div class="card-module-top">
-          ${RENAME_IDX===idx ? `
-          <div class="input-row" style="max-width:220px;">
-            <input type="text" id="renameInput" value="${(m.name||'').replace(/"/g,'&quot;')}" placeholder="Modül ${idx+1}" maxlength="40">
-          </div>` : `<h3>${moduleLabel(m,idx)}</h3>`}
-          <div style="display:flex;gap:6px;align-items:center;">
-            ${prog.done ? '<span class="pill done">tamamlandı</span>' : `<span class="pill">${prog.step}/${STEPS_PER_MODULE}</span>`}
-            ${RENAME_IDX===idx
-              ? `<button class="reset-btn" data-rename-save="${idx}">Kaydet</button><button class="reset-btn" data-rename-cancel="1">Vazgeç</button>`
-              : `<button class="reset-btn" style="padding:4px 9px;" data-rename="${idx}" title="Modül adını düzenle">✎ isim</button><button class="reset-btn" style="padding:4px 9px;" data-del="${idx}" title="Modülü sil">− sil</button>`}
-          </div>
-        </div>
-        <div class="cat">${m.words.length}/${MAX_WORDS_PER_MODULE} kelime</div>
-        <div class="progress-track"><div class="progress-fill" style="width:${prog.done?100:pct}%"></div></div>
-        <div class="btn-row" style="justify-content:flex-start;margin-top:12px;">
-          <button class="btn btn-ghost" data-edit="${idx}" style="padding:8px 14px;font-size:13px;">✎ Kelimeleri düzenle</button>
-          <button class="btn btn-primary" data-start="${idx}" style="padding:8px 14px;font-size:13px;" ${hasWords?'':'disabled'}>▶ Derse başla</button>
-        </div>
-      </div>
-    </div>`;
-  });
-  html += `</div>
-  <div class="btn-row" style="margin:18px 0 8px;">
-    <button class="btn btn-primary" id="addModBtn">+ Modül ekle</button>
-  </div>
-  <p class="empty-note">${MODULES.length===0 ? 'Henüz modül yok — başlamak için "+ Modül ekle" butonuna dokun, ardından kelimelerini gir.' : 'Her modüle en fazla '+MAX_WORDS_PER_MODULE+' kelime ekleyebilirsin. Her modül 7 alıştırma türünden oluşan döngüyü 14 kez farklı formatlarla tekrarlar.'}</p>`;
-  return html;
-}
-function attachListEvents(){
-  const reset = document.getElementById('resetBtn');
-  if(reset) reset.onclick = async ()=>{
-    if(confirm('Tüm ilerleme (kelimeler kalır) sıfırlansın mı?')){
-      PROGRESS = defaultProgress();
-      await saveProgress();
-      render();
-    }
-  };
-  const addBtn = document.getElementById('addModBtn');
-  if(addBtn) addBtn.onclick = ()=> addModule();
-  document.querySelectorAll('[data-start]').forEach(el=>{
-    el.onclick = ()=>{
-      const idx = parseInt(el.dataset.start,10);
-      CUR_MODULE = idx;
-      RENAME_IDX = null;
-      startStep();
-    };
-  });
-  document.querySelectorAll('[data-edit]').forEach(el=>{
-    el.onclick = ()=>{
-      EDIT_MODULE = parseInt(el.dataset.edit,10);
-      RENAME_IDX = null;
-      SCREEN = 'edit';
-      render();
-    };
-  });
-  document.querySelectorAll('[data-del]').forEach(el=>{
-    el.onclick = (e)=>{ e.stopPropagation(); deleteModule(parseInt(el.dataset.del,10)); };
-  });
-  document.querySelectorAll('[data-rename]').forEach(el=>{
-    el.onclick = ()=>{ RENAME_IDX = parseInt(el.dataset.rename,10); render(); };
-  });
-  document.querySelectorAll('[data-rename-cancel]').forEach(el=>{
-    el.onclick = ()=>{ RENAME_IDX = null; render(); };
-  });
-  document.querySelectorAll('[data-rename-save]').forEach(el=>{
-    el.onclick = ()=>{
-      const idx = parseInt(el.dataset.renameSave,10);
-      const inp = document.getElementById('renameInput');
-      renameModule(idx, inp ? inp.value : '');
-    };
-  });
-  const renameInput = document.getElementById('renameInput');
-  if(renameInput){
-    renameInput.focus();
-    renameInput.select();
-    renameInput.onkeydown = (e)=>{
-      if(e.key==='Enter'){ e.preventDefault(); renameModule(RENAME_IDX, renameInput.value); }
-      if(e.key==='Escape'){ e.preventDefault(); RENAME_IDX=null; render(); }
-    };
-  }
+    document.body.classList.toggle("dark");
+
+    localStorage.setItem(
+        "deutsch_dark",
+        document.body.classList.contains("dark") ? "1" : "0"
+    );
 }
 
-/* ---------------- KELİME DÜZENLEME EKRANI ---------------- */
-function renderEdit(){
-  const m = MODULES[EDIT_MODULE];
-  if(!m){ return '<div class="empty-note">Modül bulunamadı.</div>'; }
-  const full = m.words.length >= MAX_WORDS_PER_MODULE;
-  let rows = m.words.map((w,i)=>`
-    <div class="example-block" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;">
-      <div>
-        <div class="example-de" style="font-size:16px;">${w.de}</div>
-        <div class="example-tr">${w.tr.join(' / ')}</div>
-      </div>
-      <button class="reset-btn" data-rm="${i}">− sil</button>
-    </div>`).join('');
-  if(!rows) rows = '<p class="empty-note">Bu modülde henüz kelime yok. Aşağıdan ekleyebilirsin.</p>';
-  return `
-  <div class="lesson-head">
-    <div class="lesson-head-row">
-      <span class="back-link" id="backBtn">← Modüller</span>
-      <span class="stage-badge">${moduleLabel(m,EDIT_MODULE)} · ${m.words.length}/${MAX_WORDS_PER_MODULE}</span>
-    </div>
-    <h2 class="lesson-title" style="font-size:20px;">Kelimeleri düzenle</h2>
-  </div>
-  <div>${rows}</div>
-  ${full ? '<p class="empty-note">Bu modül maksimum kelime sayısına ulaştı.</p>' : `
-  <div class="stage-card" style="align-items:stretch;text-align:left;">
-    <span class="hint">Yeni kelime ekle</span>
-    <div class="input-row" style="max-width:none;">
-      <input type="text" id="newDe" placeholder="Almanca (örn. kaufen)">
-    </div>
-    <div class="input-row" style="max-width:none;">
-      <input type="text" id="newTr" placeholder="Türkçe anlam(lar), virgülle ayır (örn. satın almak)">
-    </div>
-    <div class="btn-row" style="justify-content:flex-start;">
-      <button class="btn btn-primary" id="addWordBtn">+ Ekle</button>
-    </div>
-  </div>`}
-  `;
-}
-function attachEditEvents(){
-  const back = document.getElementById('backBtn');
-  if(back) back.onclick = goList;
-  document.querySelectorAll('[data-rm]').forEach(el=>{
-    el.onclick = ()=> removeWordFromModule(EDIT_MODULE, parseInt(el.dataset.rm,10));
-  });
-  const addBtn = document.getElementById('addWordBtn');
-  const deInp = document.getElementById('newDe');
-  const trInp = document.getElementById('newTr');
-  const submit = ()=>{
-    addWordToModule(EDIT_MODULE, deInp.value, trInp.value);
-  };
-  if(addBtn) addBtn.onclick = submit;
-  [deInp, trInp].forEach(inp=>{
-    if(inp) inp.onkeydown = (e)=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } };
-  });
+if(localStorage.getItem("deutsch_dark") === "1"){
+    document.body.classList.add("dark");
 }
 
-/* ---------------- DERS EKRANI ---------------- */
-function startStep(){
-  const mod = MODULES[CUR_MODULE];
-  if(!mod || mod.words.length===0){ alert('Bu modülde henüz kelime yok. Önce kelime ekle.'); SCREEN='list'; render(); return; }
-  const prog = PROGRESS[mod.id];
-  let step = prog.step;
-  if(step >= STEPS_PER_MODULE) step = STEPS_PER_MODULE - 1; // güvenlik
-  const stageType = step % STAGE_TYPES.length;
-  const rep = Math.floor(step / STAGE_TYPES.length); // 0..13
-  const seed = step*7+13;
-  const order = seededShuffle(mod.words, seed);
-  session = {
-    mod, step, stageType, rep, seed, order,
-    idx:0, correctCount:0, wrongCount:0,
-    inputVal:'', feedback:null, feedbackType:null,
-    selectedLeft:null, matched:[], leftShuffled:null, rightShuffled:null,
-    mcSelected:null, mcResolved:false, mcOptions:null, mcCorrectIdx:null,
-    testAnswers:[]
-  };
-  SCREEN = 'lesson';
-  render();
+
+/* =========================================================
+   DATA
+   ========================================================= */
+
+const lessons = [
+
+/* ========================= A1 ========================= */
+
+{
+level:"A1",
+number:1,
+title:"التحية والتعارف",
+vocab:[
+{
+de:"Hallo",
+ar:"مرحبًا",
+pron:"هالو",
+ex:"Hallo! Wie geht es dir?",
+exAr:"مرحبًا! كيف حالك؟",
+exPron:"هالو! في جيت إس دير؟"
+},
+{
+de:"Guten Morgen",
+ar:"صباح الخير",
+pron:"غوتن مورغن",
+ex:"Guten Morgen!",
+exAr:"صباح الخير!",
+exPron:"غوتن مورغن!"
+},
+{
+de:"Guten Abend",
+ar:"مساء الخير",
+pron:"غوتن آبِنت",
+ex:"Guten Abend!",
+exAr:"مساء الخير!",
+exPron:"غوتن آبِنت!"
+},
+{
+de:"Gute Nacht",
+ar:"تصبح على خير",
+pron:"غوتِ ناخْت",
+ex:"Gute Nacht!",
+exAr:"تصبح على خير!",
+exPron:"غوتِ ناخْت!"
+},
+{
+de:"Danke",
+ar:"شكرًا",
+pron:"دانكه",
+ex:"Danke für deine Hilfe.",
+exAr:"شكرًا على مساعدتك.",
+exPron:"دانكه فور داينه هيلفه."
+},
+{
+de:"Bitte",
+ar:"من فضلك / العفو",
+pron:"بِتّه",
+ex:"Bitte, setzen Sie sich.",
+exAr:"من فضلك اجلس.",
+exPron:"بِتّه، زِتسن زي زِش."
+},
+{
+de:"Entschuldigung",
+ar:"عذرًا",
+pron:"إنتشولديغونغ",
+ex:"Entschuldigung, wo ist der Bahnhof?",
+exAr:"عذرًا، أين محطة القطار؟",
+exPron:"إنتشولديغونغ، فو إست دير بانهوف؟"
+},
+{
+de:"Wie heißen Sie?",
+ar:"ما اسم حضرتك؟",
+pron:"في هايسن زي؟",
+ex:"Wie heißen Sie?",
+exAr:"ما اسم حضرتك؟",
+exPron:"في هايسن زي؟"
+},
+{
+de:"Ich heiße ...",
+ar:"اسمي...",
+pron:"إيش هايسه...",
+ex:"Ich heiße Ahmed.",
+exAr:"اسمي أحمد.",
+exPron:"إيش هايسه أحمد."
+},
+{
+de:"Woher kommen Sie?",
+ar:"من أين حضرتك؟",
+pron:"فوهيَر كومِن زي؟",
+ex:"Woher kommen Sie?",
+exAr:"من أين حضرتك؟",
+exPron:"فوهيَر كومِن زي؟"
+},
+{
+de:"Ich komme aus ...",
+ar:"أنا من...",
+pron:"إيش كومه آوس...",
+ex:"Ich komme aus Ägypten.",
+exAr:"أنا من مصر.",
+exPron:"إيش كومه آوس إِغيبْتن."
+}
+],
+
+grammar:[
+{
+title:"ضمائر الشخص",
+body:`
+<div class="formula">
+ich = أنا<br>
+du = أنت<br>
+er = هو<br>
+sie = هي<br>
+wir = نحن<br>
+ihr = أنتم<br>
+Sie = حضرتك / حضراتكم
+</div>
+
+<p>
+<strong>Ich bin Ahmed.</strong><br>
+النطق: إيش بِـن أحمد.<br>
+المعنى: أنا أحمد.
+</p>
+`
+},
+{
+title:"الفعل sein",
+body:`
+<div class="formula">
+ich bin<br>
+du bist<br>
+er/sie ist<br>
+wir sind<br>
+ihr seid<br>
+Sie sind
+</div>
+
+<p>
+<strong>Ich bin Student.</strong><br>
+النطق: إيش بِـن شتودِنت.<br>
+المعنى: أنا طالب.
+</p>
+`
+}
+],
+
+dialogue:[
+{
+speaker:"A",
+de:"Hallo! Wie heißen Sie?",
+ar:"مرحبًا! ما اسم حضرتك؟",
+pron:"هالو! في هايسن زي؟"
+},
+{
+speaker:"B",
+de:"Ich heiße Ahmed. Und Sie?",
+ar:"اسمي أحمد. وحضرتك؟",
+pron:"إيش هايسه أحمد. أوند زي؟"
+},
+{
+speaker:"A",
+de:"Ich heiße Maria.",
+ar:"اسمي ماريا.",
+pron:"إيش هايسه ماريا."
+}
+]
+},
+
+{
+level:"A1",
+number:2,
+title:"الأرقام والأعداد",
+vocab:[
+{
+de:"null",
+ar:"صفر",
+pron:"نول",
+ex:"Ich habe null Euro.",
+exAr:"ليس لدي أي يورو.",
+exPron:"إيش هابه نول أويْرو."
+},
+{
+de:"eins",
+ar:"واحد",
+pron:"آينس",
+ex:"Ein Kaffee, bitte.",
+exAr:"قهوة واحدة، من فضلك.",
+exPron:"آين كافيه، بِتّه."
+},
+{
+de:"zwei",
+ar:"اثنان",
+pron:"تسفاي",
+ex:"Zwei Tickets, bitte.",
+exAr:"تذكرتان، من فضلك.",
+exPron:"تسفاي تيكِتس، بِتّه."
+},
+{
+de:"drei",
+ar:"ثلاثة",
+pron:"دراي",
+ex:"Drei Personen.",
+exAr:"ثلاثة أشخاص.",
+exPron:"دراي بيرزونن."
+},
+{
+de:"vier",
+ar:"أربعة",
+pron:"فير",
+ex:"Vier Tage.",
+exAr:"أربعة أيام.",
+exPron:"فير تاغه."
+},
+{
+de:"fünf",
+ar:"خمسة",
+pron:"فونف",
+ex:"Fünf Minuten.",
+exAr:"خمس دقائق.",
+exPron:"فونف مينوتن."
+},
+{
+de:"zehn",
+ar:"عشرة",
+pron:"تسين",
+ex:"Zehn Euro.",
+exAr:"عشرة يورو.",
+exPron:"تسين أويْرو."
+},
+{
+de:"hundert",
+ar:"مئة",
+pron:"هونْدَرت",
+ex:"Hundert Euro.",
+exAr:"مئة يورو.",
+exPron:"هونْدَرت أويْرو."
+}
+],
+grammar:[
+{
+title:"الأرقام في جملة",
+body:`
+<p>
+<strong>Ich habe zwei Brüder.</strong><br>
+النطق: إيش هابه تسفاي برودر.<br>
+المعنى: لدي أخوان.
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Wie viele Tickets brauchen Sie?",
+ar:"كم تذكرة تحتاج؟",
+pron:"في فيله تيكِتس براوْخن زي؟"
+},
+{
+speaker:"B",
+de:"Zwei Tickets, bitte.",
+ar:"تذكرتان، من فضلك.",
+pron:"تسفاي تيكِتس، بِتّه."
+}
+]
+},
+
+{
+level:"A1",
+number:3,
+title:"الوقت والتاريخ",
+vocab:[
+{
+de:"heute",
+ar:"اليوم",
+pron:"هويته",
+ex:"Heute ist Montag.",
+exAr:"اليوم الاثنين.",
+exPron:"هويته إست مونتاغ."
+},
+{
+de:"morgen",
+ar:"غدًا",
+pron:"مورغن",
+ex:"Bis morgen!",
+exAr:"إلى الغد!",
+exPron:"بِس مورغن!"
+},
+{
+de:"gestern",
+ar:"أمس",
+pron:"غيسترن",
+ex:"Gestern war ich zu Hause.",
+exAr:"كنت في المنزل أمس.",
+exPron:"غيسترن فار إيش تسو هاوزه."
+},
+{
+de:"Montag",
+ar:"الاثنين",
+pron:"مونتاغ",
+ex:"Am Montag arbeite ich.",
+exAr:"أعمل يوم الاثنين.",
+exPron:"آم مونتاغ أربايتِه إيش."
+},
+{
+de:"Dienstag",
+ar:"الثلاثاء",
+pron:"دينستاغ",
+ex:"Am Dienstag habe ich Zeit.",
+exAr:"لدي وقت يوم الثلاثاء.",
+exPron:"آم دينستاغ هابه إيش تسايت."
+},
+{
+de:"Uhr",
+ar:"الساعة",
+pron:"أور",
+ex:"Es ist acht Uhr.",
+exAr:"الساعة الثامنة.",
+exPron:"إس إست آخت أور."
+},
+{
+de:"Minute",
+ar:"دقيقة",
+pron:"مينوته",
+ex:"Eine Minute, bitte.",
+exAr:"دقيقة واحدة من فضلك.",
+exPron:"آينه مينوته، بِتّه."
+}
+],
+grammar:[
+{
+title:"السؤال عن الوقت",
+body:`
+<p>
+<strong>Wie spät ist es?</strong><br>
+النطق: في شبيت إست إس؟<br>
+المعنى: كم الساعة؟
+</p>
+
+<p>
+<strong>Es ist acht Uhr.</strong><br>
+النطق: إس إست آخت أور.<br>
+المعنى: الساعة الثامنة.
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Wie spät ist es?",
+ar:"كم الساعة؟",
+pron:"في شبيت إست إس؟"
+},
+{
+speaker:"B",
+de:"Es ist zehn Uhr.",
+ar:"الساعة العاشرة.",
+pron:"إس إست تسين أور."
+}
+]
+},
+
+{
+level:"A1",
+number:4,
+title:"العائلة",
+vocab:[
+{
+de:"Familie",
+ar:"عائلة",
+pron:"فاميليِه",
+ex:"Meine Familie ist groß.",
+exAr:"عائلتي كبيرة.",
+exPron:"ماينه فاميليِه إست غروس."
+},
+{
+de:"Mutter",
+ar:"أم",
+pron:"موتَر",
+ex:"Meine Mutter ist zu Hause.",
+exAr:"أمي في المنزل.",
+exPron:"ماينه موتَر إست تسو هاوزه."
+},
+{
+de:"Vater",
+ar:"أب",
+pron:"فاتَر",
+ex:"Mein Vater arbeitet.",
+exAr:"أبي يعمل.",
+exPron:"ماين فاتَر أربايتِت."
+},
+{
+de:"Bruder",
+ar:"أخ",
+pron:"برودر",
+ex:"Ich habe einen Bruder.",
+exAr:"لدي أخ.",
+exPron:"إيش هابه آينن برودر."
+},
+{
+de:"Schwester",
+ar:"أخت",
+pron:"شفِستر",
+ex:"Meine Schwester studiert.",
+exAr:"أختي تدرس.",
+exPron:"ماينه شفِستر شتوديرت."
+},
+{
+de:"Kind",
+ar:"طفل",
+pron:"كينت",
+ex:"Das Kind schläft.",
+exAr:"الطفل نائم.",
+exPron:"داس كينت شليفت."
+}
+],
+grammar:[
+{
+title:"haben",
+body:`
+<div class="formula">
+ich habe<br>
+du hast<br>
+er/sie hat<br>
+wir haben<br>
+ihr habt<br>
+Sie haben
+</div>
+
+<p>
+<strong>Ich habe eine Schwester.</strong><br>
+النطق: إيش هابه آينه شفِستر.<br>
+المعنى: لدي أخت.
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Hast du Geschwister?",
+ar:"هل لديك إخوة أو أخوات؟",
+pron:"هاست دو غِشفِستر؟"
+},
+{
+speaker:"B",
+de:"Ja, ich habe einen Bruder.",
+ar:"نعم، لدي أخ.",
+pron:"يا، إيش هابه آينن برودر."
+}
+]
+},
+
+{
+level:"A1",
+number:5,
+title:"الطعام والشراب والجوع",
+vocab:[
+{
+de:"Wasser",
+ar:"ماء",
+pron:"فاسَر",
+ex:"Ich möchte Wasser.",
+exAr:"أريد ماء.",
+exPron:"إيش موختِه فاسَر."
+},
+{
+de:"Brot",
+ar:"خبز",
+pron:"بروت",
+ex:"Ich esse Brot.",
+exAr:"أنا آكل الخبز.",
+exPron:"إيش إِسّه بروت."
+},
+{
+de:"Milch",
+ar:"حليب",
+pron:"ميلش",
+ex:"Ich trinke Milch.",
+exAr:"أنا أشرب الحليب.",
+exPron:"إيش ترينكه ميلش."
+},
+{
+de:"Kaffee",
+ar:"قهوة",
+pron:"كافيه",
+ex:"Ich trinke Kaffee.",
+exAr:"أنا أشرب القهوة.",
+exPron:"إيش ترينكه كافيه."
+},
+{
+de:"Tee",
+ar:"شاي",
+pron:"تي",
+ex:"Möchtest du Tee?",
+exAr:"هل تريد شايًا؟",
+exPron:"موختست دو تي؟"
+},
+{
+de:"Hunger",
+ar:"جوع",
+pron:"هونغَر",
+ex:"Ich habe Hunger.",
+exAr:"أنا جائع.",
+exPron:"إيش هابه هونغَر."
+},
+{
+de:"Durst",
+ar:"عطش",
+pron:"دورست",
+ex:"Ich habe Durst.",
+exAr:"أنا عطشان.",
+exPron:"إيش هابه دورست."
+},
+{
+de:"essen",
+ar:"يأكل",
+pron:"إِسّن",
+ex:"Wir essen zusammen.",
+exAr:"نحن نأكل معًا.",
+exPron:"فير إِسّن تسوزامِن."
+},
+{
+de:"trinken",
+ar:"يشرب",
+pron:"ترينكن",
+ex:"Ich trinke Wasser.",
+exAr:"أنا أشرب الماء.",
+exPron:"إيش ترينكه فاسَر."
+}
+],
+grammar:[
+{
+title:"möchten — أريد / أرغب",
+body:`
+<div class="formula">
+ich möchte<br>
+du möchtest<br>
+er/sie möchte<br>
+wir möchten<br>
+Sie möchten
+</div>
+
+<p>
+<strong>Ich möchte einen Kaffee.</strong><br>
+النطق: إيش موختِه آينن كافيه.<br>
+المعنى: أريد قهوة.
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Hast du Hunger?",
+ar:"هل أنت جائع؟",
+pron:"هاست دو هونغَر؟"
+},
+{
+speaker:"B",
+de:"Ja, ich habe Hunger.",
+ar:"نعم، أنا جائع.",
+pron:"يا، إيش هابه هونغَر."
+},
+{
+speaker:"A",
+de:"Möchtest du etwas essen?",
+ar:"هل تريد أن تأكل شيئًا؟",
+pron:"موختست دو إتڤاس إِسّن؟"
+}
+]
+},
+
+{
+level:"A1",
+number:6,
+title:"البيت والغرف",
+vocab:[
+{
+de:"Haus",
+ar:"منزل",
+pron:"هاوس",
+ex:"Mein Haus ist klein.",
+exAr:"منزلي صغير.",
+exPron:"ماين هاوس إست كلاين."
+},
+{
+de:"Wohnung",
+ar:"شقة",
+pron:"فونونغ",
+ex:"Ich habe eine Wohnung.",
+exAr:"لدي شقة.",
+exPron:"إيش هابه آينه فونونغ."
+},
+{
+de:"Zimmer",
+ar:"غرفة",
+pron:"تسيمَر",
+ex:"Das Zimmer ist groß.",
+exAr:"الغرفة كبيرة.",
+exPron:"داس تسيمَر إست غروس."
+},
+{
+de:"Küche",
+ar:"مطبخ",
+pron:"كويخه",
+ex:"Die Küche ist sauber.",
+exAr:"المطبخ نظيف.",
+exPron:"دي كويخه إست زاوبر."
+},
+{
+de:"Bad",
+ar:"حمام",
+pron:"بات",
+ex:"Das Bad ist klein.",
+exAr:"الحمام صغير.",
+exPron:"داس بات إست كلاين."
+},
+{
+de:"Tür",
+ar:"باب",
+pron:"تور",
+ex:"Die Tür ist offen.",
+exAr:"الباب مفتوح.",
+exPron:"دي تور إست أوفن."
+},
+{
+de:"Fenster",
+ar:"نافذة",
+pron:"فِنستر",
+ex:"Das Fenster ist offen.",
+exAr:"النافذة مفتوحة.",
+exPron:"داس فِنستر إست أوفن."
+},
+{
+de:"Schlüssel",
+ar:"مفتاح",
+pron:"شلوسِل",
+ex:"Wo ist mein Schlüssel?",
+exAr:"أين مفتاحي؟",
+exPron:"فو إست ماين شلوسِل؟"
+}
+],
+grammar:[
+{
+title:"der / die / das",
+body:`
+<div class="formula">
+der Mann<br>
+die Frau<br>
+das Kind
+</div>
+
+<p>
+<strong>Das ist mein Haus.</strong><br>
+النطق: داس إست ماين هاوس.<br>
+المعنى: هذا منزلي.
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Wo ist die Küche?",
+ar:"أين المطبخ؟",
+pron:"فو إست دي كويخه؟"
+},
+{
+speaker:"B",
+de:"Die Küche ist dort.",
+ar:"المطبخ هناك.",
+pron:"دي كويخه إست دورت."
+}
+]
+},
+
+{
+level:"A1",
+number:7,
+title:"المواصلات والمحطة",
+vocab:[
+{
+de:"Bahnhof",
+ar:"محطة القطار",
+pron:"بانهوف",
+ex:"Wo ist der Bahnhof?",
+exAr:"أين محطة القطار؟",
+exPron:"فو إست دير بانهوف؟"
+},
+{
+de:"Zug",
+ar:"قطار",
+pron:"تسوغ",
+ex:"Der Zug kommt um acht Uhr.",
+exAr:"القطار يأتي الساعة الثامنة.",
+exPron:"دير تسوغ كومْت أوم آخت أور."
+},
+{
+de:"Bus",
+ar:"حافلة",
+pron:"بوس",
+ex:"Der Bus kommt gleich.",
+exAr:"الحافلة ستأتي حالًا.",
+exPron:"دير بوس كومْت غلايش."
+},
+{
+de:"Ticket",
+ar:"تذكرة",
+pron:"تيكِت",
+ex:"Ich brauche ein Ticket.",
+exAr:"أحتاج تذكرة.",
+exPron:"إيش براوخه آين تيكِت."
+},
+{
+de:"Straße",
+ar:"شارع",
+pron:"شتراسه",
+ex:"Welche Straße ist das?",
+exAr:"أي شارع هذا؟",
+exPron:"فِلشه شتراسه إست داس؟"
+},
+{
+de:"links",
+ar:"يسار",
+pron:"لينكس",
+ex:"Gehen Sie links.",
+exAr:"اذهب إلى اليسار.",
+exPron:"غيهن زي لينكس."
+},
+{
+de:"rechts",
+ar:"يمين",
+pron:"ريشتس",
+ex:"Gehen Sie rechts.",
+exAr:"اذهب إلى اليمين.",
+exPron:"غيهن زي ريشتس."
+},
+{
+de:"geradeaus",
+ar:"مباشرة",
+pron:"غيراده آوس",
+ex:"Gehen Sie geradeaus.",
+exAr:"اذهب مباشرة.",
+exPron:"غيهن زي غيراده آوس."
+}
+],
+grammar:[
+{
+title:"أسئلة الاتجاهات",
+body:`
+<p>
+<strong>Wo ist der Bahnhof?</strong><br>
+النطق: فو إست دير بانهوف؟<br>
+المعنى: أين محطة القطار؟
+</p>
+
+<p>
+<strong>Wie komme ich zum Bahnhof?</strong><br>
+النطق: في كومه إيش تسوم بانهوف؟<br>
+المعنى: كيف أصل إلى محطة القطار؟
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Entschuldigung, wo ist der Bahnhof?",
+ar:"عذرًا، أين محطة القطار؟",
+pron:"إنتشولديغونغ، فو إست دير بانهوف؟"
+},
+{
+speaker:"B",
+de:"Gehen Sie geradeaus und dann links.",
+ar:"اذهب مباشرة ثم إلى اليسار.",
+pron:"غيهن زي غيراده آوس أوند دان لينكس."
+}
+]
+},
+
+{
+level:"A1",
+number:8,
+title:"العمل والمهنة",
+vocab:[
+{
+de:"Arbeit",
+ar:"عمل",
+pron:"أربايت",
+ex:"Ich gehe zur Arbeit.",
+exAr:"أذهب إلى العمل.",
+exPron:"إيش غيهه تسور أربايت."
+},
+{
+de:"Beruf",
+ar:"مهنة",
+pron:"بِروف",
+ex:"Was ist dein Beruf?",
+exAr:"ما مهنتك؟",
+exPron:"فاس إست داين بِروف؟"
+},
+{
+de:"Büro",
+ar:"مكتب",
+pron:"بيورو",
+ex:"Ich arbeite im Büro.",
+exAr:"أعمل في المكتب.",
+exPron:"إيش أربايتِه إِم بيورو."
+},
+{
+de:"Kollege",
+ar:"زميل",
+pron:"كولِيغه",
+ex:"Mein Kollege ist nett.",
+exAr:"زميلي لطيف.",
+exPron:"ماين كولِيغه إست نِت."
+},
+{
+de:"Chef",
+ar:"مدير / رئيس",
+pron:"شِف",
+ex:"Der Chef ist heute hier.",
+exAr:"المدير هنا اليوم.",
+exPron:"دير شِف إست هويته هير."
+},
+{
+de:"Termin",
+ar:"موعد",
+pron:"تيرمين",
+ex:"Ich habe einen Termin.",
+exAr:"لدي موعد.",
+exPron:"إيش هابه آينن تيرمين."
+},
+{
+de:"Meeting",
+ar:"اجتماع",
+pron:"ميتِنغ",
+ex:"Das Meeting beginnt um neun.",
+exAr:"الاجتماع يبدأ الساعة التاسعة.",
+exPron:"داس ميتِنغ بگينت أوم نوين."
+},
+{
+de:"Erfahrung",
+ar:"خبرة",
+pron:"إرفارونغ",
+ex:"Ich habe viel Erfahrung.",
+exAr:"لدي خبرة كبيرة.",
+exPron:"إيش هابه فيل إرفارونغ."
+}
+],
+grammar:[
+{
+title:"أسئلة العمل",
+body:`
+<p>
+<strong>Was machen Sie beruflich?</strong><br>
+النطق: فاس ماخن زي بيروفليش؟<br>
+المعنى: ماذا تعمل؟
+</p>
+
+<p>
+<strong>Ich arbeite in einem Büro.</strong><br>
+النطق: إيش أربايتِه إن آينِم بيورو.<br>
+المعنى: أعمل في مكتب.
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Was machen Sie beruflich?",
+ar:"ماذا تعمل؟",
+pron:"فاس ماخن زي بيروفليش؟"
+},
+{
+speaker:"B",
+de:"Ich arbeite in einem Büro.",
+ar:"أعمل في مكتب.",
+pron:"إيش أربايتِه إن آينِم بيورو."
+}
+]
+},
+
+/* ========================= A2 ========================= */
+
+{
+level:"A2",
+number:9,
+title:"الماضي Perfekt",
+vocab:[
+{
+de:"gestern",
+ar:"أمس",
+pron:"غيسترن",
+ex:"Ich habe gestern gearbeitet.",
+exAr:"عملت أمس.",
+exPron:"إيش هابه غيسترن غيأربايتِت."
+},
+{
+de:"gemacht",
+ar:"فعل / صنع",
+pron:"غيماخت",
+ex:"Was hast du gemacht?",
+exAr:"ماذا فعلت؟",
+exPron:"فاس هاست دو غيماخت؟"
+},
+{
+de:"gegangen",
+ar:"ذهب",
+pron:"غيغانغن",
+ex:"Ich bin nach Hause gegangen.",
+exAr:"ذهبت إلى المنزل.",
+exPron:"إيش بِـن ناخ هاوزه غيغانغن."
+},
+{
+de:"gekommen",
+ar:"جاء",
+pron:"غيكومن",
+ex:"Er ist spät gekommen.",
+exAr:"جاء متأخرًا.",
+exPron:"إير إست شبيت غيومن."
+}
+],
+grammar:[
+{
+title:"Perfekt",
+body:`
+<p>
+الماضي المركب في الألمانية يستخدم كثيرًا في الكلام اليومي.
+</p>
+
+<div class="formula">
+haben/sein + Partizip II
+</div>
+
+<p>
+<strong>Ich habe gearbeitet.</strong><br>
+النطق: إيش هابه غيأربايتِت.<br>
+المعنى: لقد عملت.
+</p>
+
+<p>
+<strong>Ich bin gegangen.</strong><br>
+النطق: إيش بِـن غيغانغن.<br>
+المعنى: لقد ذهبت.
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Was hast du gestern gemacht?",
+ar:"ماذا فعلت أمس؟",
+pron:"فاس هاست دو غيسترن غيماخت؟"
+},
+{
+speaker:"B",
+de:"Ich habe gearbeitet.",
+ar:"لقد عملت.",
+pron:"إيش هابه غيأربايتِت."
+}
+]
+},
+
+{
+level:"A2",
+number:10,
+title:"التسوق والأسعار",
+vocab:[
+{
+de:"kaufen",
+ar:"يشتري",
+pron:"كاوفن",
+ex:"Ich möchte ein Handy kaufen.",
+exAr:"أريد شراء هاتف.",
+exPron:"إيش موختِه آين هاندي كاوفن."
+},
+{
+de:"Preis",
+ar:"سعر",
+pron:"برايس",
+ex:"Wie viel kostet das?",
+exAr:"كم سعر هذا؟",
+exPron:"في فيل كوستِت داس؟"
+},
+{
+de:"teuer",
+ar:"غالي",
+pron:"تويا",
+ex:"Das ist zu teuer.",
+exAr:"هذا غالي جدًا.",
+exPron:"داس إست تسو تويا."
+},
+{
+de:"billig",
+ar:"رخيص",
+pron:"بِلّيش",
+ex:"Das ist billig.",
+exAr:"هذا رخيص.",
+exPron:"داس إست بِلّيش."
+}
+],
+grammar:[
+{
+title:"Akkusativ",
+body:`
+<p>
+بعد بعض الأفعال مثل <strong>kaufen</strong> نستخدم المفعول به.
+</p>
+
+<div class="formula">
+der → den<br>
+ein → einen
+</div>
+
+<p>
+<strong>Ich kaufe einen Kaffee.</strong><br>
+النطق: إيش كاوفه آينن كافيه.<br>
+المعنى: أشتري قهوة.
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Wie viel kostet das?",
+ar:"كم سعر هذا؟",
+pron:"في فيل كوستِت داس؟"
+},
+{
+speaker:"B",
+de:"Das kostet zwanzig Euro.",
+ar:"هذا سعره عشرون يورو.",
+pron:"داس كوستِت تسفانتسيش أويْرو."
+}
+]
+},
+
+/* ========================= B1 ========================= */
+
+{
+level:"B1",
+number:11,
+title:"التعبير عن الرأي",
+vocab:[
+{
+de:"Meinung",
+ar:"رأي",
+pron:"ماينونغ",
+ex:"Das ist meine Meinung.",
+exAr:"هذا رأيي.",
+exPron:"داس إست ماينه ماينونغ."
+},
+{
+de:"glauben",
+ar:"يعتقد",
+pron:"غلاوبن",
+ex:"Ich glaube, dass er recht hat.",
+exAr:"أعتقد أنه على حق.",
+exPron:"إيش غلاوبه، داس إير ريشت هات."
+},
+{
+de:"wichtig",
+ar:"مهم",
+pron:"فيشتِش",
+ex:"Das ist sehr wichtig.",
+exAr:"هذا مهم جدًا.",
+exPron:"داس إست زير فيشتِش."
+},
+{
+de:"Problem",
+ar:"مشكلة",
+pron:"بروبلييم",
+ex:"Wir müssen das Problem lösen.",
+exAr:"يجب أن نحل المشكلة.",
+exPron:"فير موسن داس بروبلييم لوزن."
+}
+],
+grammar:[
+{
+title:"weil / dass",
+body:`
+<p>
+<strong>weil</strong> و <strong>dass</strong> يسببان انتقال الفعل إلى نهاية الجملة الفرعية.
+</p>
+
+<p>
+<strong>Ich bleibe zu Hause, weil ich krank bin.</strong><br>
+النطق: إيش بلايبه تسو هاوزه، فايل إيش كرانك بِـن.<br>
+المعنى: أبقى في المنزل لأنني مريض.
+</p>
+
+<p>
+<strong>Ich glaube, dass er kommt.</strong><br>
+النطق: إيش غلاوبه، داس إير كومْت.<br>
+المعنى: أعتقد أنه سيأتي.
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Was ist deine Meinung?",
+ar:"ما رأيك؟",
+pron:"فاس إست داينه ماينونغ؟"
+},
+{
+speaker:"B",
+de:"Ich glaube, dass diese Idee gut ist.",
+ar:"أعتقد أن هذه الفكرة جيدة.",
+pron:"إيش غلاوبه، داس ديزه إيديه غوت إست."
+}
+]
+},
+
+{
+level:"B1",
+number:12,
+title:"المقابلة والعمل",
+vocab:[
+{
+de:"Bewerbung",
+ar:"طلب توظيف",
+pron:"بِفيربونغ",
+ex:"Ich schreibe eine Bewerbung.",
+exAr:"أكتب طلب توظيف.",
+exPron:"إيش شرايبه آينه بِفيربونغ."
+},
+{
+de:"Vorstellungsgespräch",
+ar:"مقابلة عمل",
+pron:"فورشتيلونغس غِشبرِيش",
+ex:"Ich habe morgen ein Vorstellungsgespräch.",
+exAr:"لدي مقابلة عمل غدًا.",
+exPron:"إيش هابه مورغن آين فورشتيلونغس غِشبرِيش."
+},
+{
+de:"Erfahrung",
+ar:"خبرة",
+pron:"إرفارونغ",
+ex:"Ich habe fünf Jahre Erfahrung.",
+exAr:"لدي خمس سنوات من الخبرة.",
+exPron:"إيش هابه فونف ياره إرفارونغ."
+},
+{
+de:"Fähigkeit",
+ar:"مهارة / قدرة",
+pron:"فيهِشكايت",
+ex:"Diese Fähigkeit ist wichtig.",
+exAr:"هذه المهارة مهمة.",
+exPron:"ديزه فيهِشكايت إست فيشتِش."
+}
+],
+grammar:[
+{
+title:"Konjunktiv II للطلب المهذب",
+body:`
+<p>
+<strong>Ich würde gern ...</strong><br>
+النطق: إيش فورده غيرن...<br>
+المعنى: أود أن...
+</p>
+
+<p>
+<strong>Ich würde gern bei Ihnen arbeiten.</strong><br>
+النطق: إيش فورده غيرن باي إينِن أربايتن.<br>
+المعنى: أود أن أعمل لديكم.
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Warum möchten Sie bei uns arbeiten?",
+ar:"لماذا تريد العمل لدينا؟",
+pron:"فاروم موختن زي باي أونس أربايتن؟"
+},
+{
+speaker:"B",
+de:"Weil ich Ihre Arbeit sehr interessant finde.",
+ar:"لأنني أجد عملكم مثيرًا للاهتمام.",
+pron:"فايل إيش إيره أربايت زير إنتِرِسانت فِنده."
+}
+]
+},
+
+/* ========================= B2 ========================= */
+
+{
+level:"B2",
+number:13,
+title:"الحجاج والمناقشة",
+vocab:[
+{
+de:"Argument",
+ar:"حجة",
+pron:"أرغومِنت",
+ex:"Das ist ein starkes Argument.",
+exAr:"هذه حجة قوية.",
+exPron:"داس إست آين شتاركس أرغومِنت."
+},
+{
+de:"Vorteil",
+ar:"ميزة",
+pron:"فورتايل",
+ex:"Ein Vorteil ist die Flexibilität.",
+exAr:"من المزايا المرونة.",
+exPron:"آين فورتايل إست دي فليكسيبيليتيت."
+},
+{
+de:"Nachteil",
+ar:"عيب",
+pron:"ناختايل",
+ex:"Ein Nachteil sind die Kosten.",
+exAr:"من العيوب التكاليف.",
+exPron:"آين ناختايل زِنت دي كوستن."
+},
+{
+de:"allerdings",
+ar:"ومع ذلك / لكن",
+pron:"ألردينغس",
+ex:"Das stimmt, allerdings gibt es ein Problem.",
+exAr:"هذا صحيح، لكن هناك مشكلة.",
+exPron:"داس شتِمت، ألردينغس غيبت إس آين بروبلييم."
+}
+],
+grammar:[
+{
+title:"روابط الحجاج",
+body:`
+<p>
+من الروابط المهمة:
+</p>
+
+<div class="formula">
+einerseits ... andererseits<br>
+außerdem<br>
+allerdings<br>
+dennoch<br>
+daher<br>
+folglich
+</div>
+
+<p>
+<strong>Einerseits ist die Idee interessant, andererseits ist sie teuer.</strong><br>
+النطق: آينَرزايتس إست دي إيديه إنتِرِسانت، أندرَرايتس إست زي تويا.<br>
+المعنى: من ناحية الفكرة مثيرة للاهتمام، ومن ناحية أخرى هي غالية.
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Welche Vorteile hat diese Lösung?",
+ar:"ما مزايا هذا الحل؟",
+pron:"فِلشه فورتايله هات ديزه لوزونغ؟"
+},
+{
+speaker:"B",
+de:"Einerseits ist sie schnell, andererseits ist sie teuer.",
+ar:"من ناحية هي سريعة، ومن ناحية أخرى هي غالية.",
+pron:"آينَرزايتس إست زي شنِل، أندرَرايتس إست زي تويا."
+}
+]
+},
+
+/* ========================= C1 ========================= */
+
+{
+level:"C1",
+number:14,
+title:"الألمانية الأكاديمية والتحليل",
+vocab:[
+{
+de:"Untersuchung",
+ar:"دراسة / بحث",
+pron:"أونتَرشوخونغ",
+ex:"Die Untersuchung zeigt interessante Ergebnisse.",
+exAr:"تُظهر الدراسة نتائج مثيرة للاهتمام.",
+exPron:"دي أونتَرشوخونغ تسايگت إنتِرِسانته إيرغييبنِسه."
+},
+{
+de:"Ergebnis",
+ar:"نتيجة",
+pron:"إيرغييبْنِس",
+ex:"Das Ergebnis ist eindeutig.",
+exAr:"النتيجة واضحة.",
+exPron:"داس إيرغييبْنِس إست آينْدويتيش."
+},
+{
+de:"Zusammenhang",
+ar:"ترابط / علاقة",
+pron:"تسوزامِن هانغ",
+ex:"Es gibt einen Zusammenhang zwischen den Faktoren.",
+exAr:"هناك علاقة بين العوامل.",
+exPron:"إس غيبت آينن تسوزامِن هانغ تسفيشن دين فاكتورن."
+},
+{
+de:"berücksichtigen",
+ar:"يأخذ بعين الاعتبار",
+pron:"بِروكزيشتِغن",
+ex:"Wir müssen mehrere Faktoren berücksichtigen.",
+exAr:"يجب أن نأخذ عدة عوامل بعين الاعتبار.",
+exPron:"فير موسن ميرَرِه فاكتورن بِروكزيشتِغن."
+},
+{
+de:"hinsichtlich",
+ar:"فيما يتعلق بـ",
+pron:"هِـنزيشتليش",
+ex:"Hinsichtlich der Kosten gibt es Fragen.",
+exAr:"فيما يتعلق بالتكاليف، توجد أسئلة.",
+exPron:"هِـنزيشتليش دير كوستن غيبت إس فراغن."
+}
+],
+grammar:[
+{
+title:"الأسلوب الرسمي والأكاديمي",
+body:`
+<p>
+في المستوى C1 ننتقل من الجمل اليومية إلى صياغة أكثر دقة وترابطًا.
+</p>
+
+<p>
+<strong>Die Ergebnisse lassen darauf schließen, dass...</strong><br>
+النطق: دي إيرغييبْنِسه لاسن داراوف شليسن، داس...<br>
+المعنى: تسمح النتائج باستنتاج أن...
+</p>
+
+<p>
+<strong>Unter Berücksichtigung dieser Faktoren...</strong><br>
+النطق: أونتر بِروكزيشتِغونغ ديزر فاكتورن...<br>
+المعنى: مع أخذ هذه العوامل بعين الاعتبار...
+</p>
+`
+}
+],
+dialogue:[
+{
+speaker:"A",
+de:"Wie bewerten Sie die Ergebnisse der Untersuchung?",
+ar:"كيف تقيّم نتائج الدراسة؟",
+pron:"في بِفيرتن زي دي إيرغييبْنِسه دير أونتَرشوخونغ؟"
+},
+{
+speaker:"B",
+de:"Die Ergebnisse sind insgesamt überzeugend, allerdings gibt es einige offene Fragen.",
+ar:"النتائج مقنعة بشكل عام، لكن توجد بعض الأسئلة المفتوحة.",
+pron:"دي إيرغييبْنِسه زِنت إنسغيزامت أوبر تسويغِنت، ألردينغس غيبت إس آينيغه أوفنه فراغن."
+}
+]
+
 }
 
-function renderLesson(){
-  const s = session;
-  const overallStep = s.step; // 0-based
-  const pct = Math.round(((overallStep)/STEPS_PER_MODULE)*100);
-  let head = `
-  <div class="lesson-head">
-    <div class="lesson-head-row">
-      <span class="back-link" id="backBtn">← Modüller</span>
-      <span class="stage-badge">${STAGE_TYPES[s.stageType]}</span>
-    </div>
-    <div class="rep-track"><div class="rep-fill" style="width:${pct}%"></div></div>
-    <div style="display:flex;justify-content:space-between;margin-top:6px;">
-      <span class="counter">${moduleLabel(MODULES[CUR_MODULE],CUR_MODULE)} · Tekrar ${s.rep+1}/14</span>
-      <span class="counter">${overallStep}/${STEPS_PER_MODULE}</span>
-    </div>
-  </div>`;
-  let body = '';
-  switch(STAGE_TYPES[s.stageType]){
-    case 'HÖM': body = renderHOM(s); break;
-    case 'TAHMİN': body = renderGuess(s, s.rep%2===0 ? 'de2tr' : 'tr2de'); break;
-    case 'TERS': body = renderGuess(s, s.rep%2===0 ? 'tr2de' : 'de2tr'); break;
-    case 'EŞLEŞTİRME': body = renderMatch(s); break;
-    case 'BOŞLUK DOLDURMA': body = renderCloze(s); break;
-    case 'ÖRNEKLER': body = renderExamples(s); break;
-    case 'MİNİ TEST': body = renderMiniTest(s); break;
-  }
-  return head + body;
+];
+
+
+/* =========================================================
+   EXTRA VOCABULARY
+   ========================================================= */
+
+const extraVocabulary = [
+
+{
+de:"ja",
+ar:"نعم",
+pron:"يا",
+ex:"Ja, natürlich.",
+exAr:"نعم، بالطبع.",
+exPron:"يا، ناتورليش."
+},
+
+{
+de:"nein",
+ar:"لا",
+pron:"ناين",
+ex:"Nein, danke.",
+exAr:"لا، شكرًا.",
+exPron:"ناين، دانكه."
+},
+
+{
+de:"wer",
+ar:"من",
+pron:"فير",
+ex:"Wer ist das?",
+exAr:"من هذا؟",
+exPron:"فير إست داس؟"
+},
+
+{
+de:"was",
+ar:"ماذا / ما",
+pron:"فاس",
+ex:"Was ist das?",
+exAr:"ما هذا؟",
+exPron:"فاس إست داس؟"
+},
+
+{
+de:"wo",
+ar:"أين",
+pron:"فو",
+ex:"Wo bist du?",
+exAr:"أين أنت؟",
+exPron:"فو بِست دو؟"
+},
+
+{
+de:"woher",
+ar:"من أين",
+pron:"فوهيَر",
+ex:"Woher kommst du?",
+exAr:"من أين أتيت؟",
+exPron:"فوهيَر كومست دو؟"
+},
+
+{
+de:"wohin",
+ar:"إلى أين",
+pron:"فوهين",
+ex:"Wohin gehst du?",
+exAr:"إلى أين تذهب؟",
+exPron:"فوهين غيست دو؟"
+},
+
+{
+de:"wann",
+ar:"متى",
+pron:"فان",
+ex:"Wann kommst du?",
+exAr:"متى ستأتي؟",
+exPron:"فان كومست دو؟"
+},
+
+{
+de:"warum",
+ar:"لماذا",
+pron:"فاروم",
+ex:"Warum bist du hier?",
+exAr:"لماذا أنت هنا؟",
+exPron:"فاروم بِست دو هير؟"
+},
+
+{
+de:"wie",
+ar:"كيف",
+pron:"في",
+ex:"Wie geht es dir?",
+exAr:"كيف حالك؟",
+exPron:"في جيت إس دير؟"
+},
+
+{
+de:"welcher",
+ar:"أيّ",
+pron:"فِلشَر",
+ex:"Welcher Zug fährt nach Berlin?",
+exAr:"أي قطار يذهب إلى برلين؟",
+exPron:"فِلشَر تسوغ فيرت ناخ برلين؟"
 }
 
-function goList(){ SCREEN='list'; session=null; RENAME_IDX=null; render(); }
+];
 
-async function completeStep(){
-  const mod = session.mod;
-  const prog = PROGRESS[mod.id];
-  prog.step = Math.min(prog.step+1, STEPS_PER_MODULE);
-  if(prog.step >= STEPS_PER_MODULE) prog.done = true;
-  await saveProgress();
-  if(prog.done){ SCREEN='modulecomplete'; render(); }
-  else { startStep(); }
-}
 
-/* ---- HÖM: hızlı hafıza kartı, zamanlayıcılı ---- */
-function renderHOM(s){
-  const words = s.order;
-  const w = words[s.idx];
-  const isLast = s.idx >= words.length-1;
-  return `
-  <div class="stage-card">
-    <span class="hint">Kartı odakla, kelime ve anlamı hafızana kazı</span>
-    <div class="ring-wrap">
-      <svg width="150" height="150" viewBox="0 0 150 150">
-        <circle class="ring-bg" cx="75" cy="75" r="66"></circle>
-        <circle class="ring-fg" id="ringFg" cx="75" cy="75" r="66" stroke-dasharray="415" stroke-dashoffset="0"></circle>
-      </svg>
-      <div class="ring-center">
-        <div class="word-de" style="font-size:26px">${w.de}</div>
-        <div class="word-tr" style="font-size:15px">${w.tr[0]}</div>
-      </div>
-    </div>
-    <div class="counter">${s.idx+1} / ${words.length}</div>
-    <div class="btn-row">
-      <button class="btn btn-ghost" id="homSkip">${isLast?'Bitir':'Sonrakine geç'}</button>
-    </div>
-  </div>`;
-}
-function attachHOM(){
-  const dur = 2600;
-  const circumference = 415;
-  let start = Date.now();
-  const ring = document.getElementById('ringFg');
-  const step = ()=>{
-    const elapsed = Date.now()-start;
-    const frac = Math.min(elapsed/dur,1);
-    if(ring) ring.setAttribute('stroke-dashoffset', String(circumference*frac));
-    if(frac>=1){ advanceHOM(); }
-  };
-  activeTimer = setInterval(step, 60);
-  const skip = document.getElementById('homSkip');
-  if(skip) skip.onclick = ()=> advanceHOM();
-}
-function advanceHOM(){
-  clearActiveTimer();
-  const words = session.order;
-  if(session.idx >= words.length-1){ completeStep(); return; }
-  session.idx += 1;
-  render();
-}
+/* =========================================================
+   RENDER
+   ========================================================= */
 
-/* ---- TAHMİN / TERS: yazarak cevap ---- */
-function renderGuess(s, mode){
-  const words = s.order;
-  if(s.idx >= words.length){
-    return renderPassSummary(s);
-  }
-  const w = words[s.idx];
-  const prompt = mode==='de2tr' ? w.de : w.tr[0];
-  const dirLabel = mode==='de2tr' ? 'Almancasını gördün, Türkçesini yaz' : 'Türkçesini gördün, Almancasını yaz';
-  return `
-  <div class="stage-card">
-    <span class="hint">${dirLabel}</span>
-    <div class="word-de">${prompt}</div>
-    <div class="input-row">
-      <input type="text" id="guessInput" autocomplete="off" placeholder="Cevabını yaz..." value="${s.inputVal||''}" ${s.feedback?'disabled':''}>
-    </div>
-    <div class="feedback ${s.feedbackType||''}">${s.feedback||''}</div>
-    <div class="btn-row">
-      ${s.feedback ? '<button class="btn btn-primary" id="guessNext">Devam et</button>' : '<button class="btn btn-primary" id="guessCheck">Kontrol et</button>'}
-    </div>
-    <div class="counter">${s.idx+1} / ${words.length} &nbsp;·&nbsp; Doğru: ${s.correctCount}</div>
-  </div>`;
-}
-function attachGuess(mode){
-  const input = document.getElementById('guessInput');
-  if(input){
-    input.focus();
-    input.oninput = (e)=>{ session.inputVal = e.target.value; };
-    input.onkeydown = (e)=>{ if(e.key==='Enter'){ e.preventDefault(); checkGuess(mode); } };
-  }
-  const chk = document.getElementById('guessCheck');
-  if(chk) chk.onclick = ()=> checkGuess(mode);
-  const nxt = document.getElementById('guessNext');
-  if(nxt) nxt.onclick = ()=> nextGuess();
-}
-function checkGuess(mode){
-  const s = session;
-  const w = s.order[s.idx];
-  let correct, correctAnswer;
-  if(mode==='de2tr'){
-    correct = isCorrectTr(s.inputVal, w.tr);
-    correctAnswer = w.tr.join(' / ');
-  } else {
-    correct = normalizeDe(s.inputVal)===normalizeDe(w.de);
-    correctAnswer = w.de;
-  }
-  if(correct){
-    s.correctCount++;
-    s.feedback = 'Doğru! ✓';
-    s.feedbackType = 'ok';
-  } else {
-    s.wrongCount++;
-    s.feedback = 'Doğru cevap: '+correctAnswer;
-    s.feedbackType = 'bad';
-  }
-  render();
-}
-function nextGuess(){
-  session.idx++; session.inputVal=''; session.feedback=null; session.feedbackType=null;
-  render();
-}
-function renderPassSummary(s){
-  const total = s.order.length;
-  const pct = Math.round((s.correctCount/total)*100);
-  return `
-  <div class="stage-card">
-    <h2 style="font-size:22px;">Bu geçiş tamam</h2>
-    <div class="score-tag" style="color:${pct>=70?'var(--green)':'var(--coral)'}">${s.correctCount}/${total} doğru (%${pct})</div>
-    <div class="btn-row"><button class="btn btn-primary" id="passContinue">Devam et</button></div>
-  </div>`;
-}
-function attachPassSummary(){
-  const b = document.getElementById('passContinue');
-  if(b) b.onclick = ()=> completeStep();
-}
+const book = document.getElementById("book");
 
-/* ---- EŞLEŞTİRME ---- */
-function renderMatch(s){
-  if(!s.leftShuffled){
-    s.leftShuffled = seededShuffle(s.order, s.seed+1);
-    s.rightShuffled = seededShuffle(s.order, s.seed+2);
-    s.matched = [];
-    s.selectedLeft = null;
-    s.wrongFlashKey = null;
-  }
-  const done = s.matched.length === s.order.length;
-  let leftHtml = s.leftShuffled.map(w=>{
-    const isMatched = s.matched.includes(w.de);
-    const isSel = s.selectedLeft===w.de;
-    const cls = isMatched? 'correct' : (isSel? 'selected':'');
-    return `<div class="match-tile ${cls}" data-key="${w.de}" data-side="left">${w.de}</div>`;
-  }).join('');
-  let rightHtml = s.rightShuffled.map(w=>{
-    const isMatched = s.matched.includes(w.de);
-    const wrongFlash = s.wrongFlashKey===w.de;
-    const cls = isMatched? 'correct' : (wrongFlash?'wrong':'');
-    return `<div class="match-tile ${cls}" data-key="${w.de}" data-side="right">${w.tr[0]}</div>`;
-  }).join('');
-  return `
-  <div class="stage-card" style="align-items:stretch;">
-    <span class="hint" style="text-align:center;">Almanca kelimeyi doğru Türkçe anlamıyla eşleştir</span>
-    <div class="match-grid">
-      <div class="match-col">${leftHtml}</div>
-      <div class="match-col">${rightHtml}</div>
-    </div>
-    <div class="counter" style="text-align:center;">${s.matched.length} / ${s.order.length} eşleşti</div>
-    ${done? '<div class="btn-row"><button class="btn btn-primary" id="matchContinue">Devam et</button></div>':''}
-  </div>`;
-}
-function attachMatch(){
-  document.querySelectorAll('.match-tile').forEach(el=>{
-    el.onclick = ()=>{
-      const key = el.dataset.key, side = el.dataset.side;
-      const s = session;
-      if(s.matched.includes(key)) return;
-      if(side==='left'){ s.selectedLeft = key; render(); return; }
-      if(side==='right'){
-        if(!s.selectedLeft) return;
-        if(s.selectedLeft===key){
-          s.matched.push(key);
-          s.selectedLeft=null;
-          render();
-        } else {
-          s.wrongFlashKey = key;
-          render();
-          setTimeout(()=>{ s.wrongFlashKey=null; s.selectedLeft=null; render(); }, 500);
+function renderLessons(){
+
+    book.innerHTML = "";
+
+    const active =
+        document.querySelector(".level-btn.active")?.dataset.level || "all";
+
+    lessons.forEach(lesson => {
+
+        if(active !== "all" && lesson.level !== active){
+            return;
         }
-      }
-    };
-  });
-  const cont = document.getElementById('matchContinue');
-  if(cont) cont.onclick = ()=> completeStep();
+
+        const card = document.createElement("article");
+
+        card.className = "card lesson";
+        card.dataset.level = lesson.level;
+
+        card.innerHTML = `
+
+        <div class="lesson-head">
+
+            <div>
+                <div class="lesson-number">
+                    ${lesson.level} • الدرس ${lesson.number}
+                </div>
+
+                <h2>${lesson.title}</h2>
+            </div>
+
+            <button
+                type="button"
+                class="speak"
+                aria-label="تشغيل عنوان الدرس"
+                onclick="speakGerman(${JSON.stringify(lesson.title)})">
+                🔊
+            </button>
+
+        </div>
+
+        <div class="lesson-content">
+
+            <details open>
+                <summary>📚 الكلمات والمفردات</summary>
+
+                <div class="details-content">
+
+                    <div class="vocab">
+
+                    ${lesson.vocab.map(word => `
+
+                        <div
+                            class="word searchable"
+                            data-search="${escapeHtml(
+                                word.de+" "+
+                                word.ar+" "+
+                                word.pron+" "+
+                                word.ex
+                            )}">
+
+                            <div class="word-main">
+
+                                <div>
+
+                                    <div class="german">
+                                        ${word.de}
+                                    </div>
+
+                                    <div class="pron">
+                                        النطق: ${word.pron}
+                                    </div>
+
+                                    <div class="meaning">
+                                        ${word.ar}
+                                    </div>
+
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="speak"
+                                    aria-label="نطق ${word.de}"
+                                    onclick="speakGerman(${JSON.stringify(word.de)})">
+                                    🔊
+                                </button>
+
+                            </div>
+
+                            <div class="example">
+
+                                <div class="example-de">
+                                    ${word.ex}
+                                </div>
+
+                                <div class="example-pron">
+                                    النطق: ${word.exPron}
+                                </div>
+
+                                <div class="example-ar">
+                                    ${word.exAr}
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="speak"
+                                    aria-label="نطق المثال"
+                                    onclick="speakGerman(${JSON.stringify(word.ex)})">
+                                    🔊
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    `).join("")}
+
+                    </div>
+
+                </div>
+            </details>
+
+
+            <details>
+                <summary>🧠 القواعد</summary>
+
+                <div class="details-content">
+
+                    ${lesson.grammar.map(g => `
+                        <div class="grammar-box">
+                            <h3>${g.title}</h3>
+                            ${g.body}
+                        </div>
+                    `).join("")}
+
+                </div>
+            </details>
+
+
+            <details>
+                <summary>💬 الحوار</summary>
+
+                <div class="details-content">
+
+                    <div class="dialogue">
+
+                    ${lesson.dialogue.map(line => `
+
+                        <div class="dialogue-line">
+
+                            <div>
+
+                                <div class="speaker">
+                                    ${line.speaker}
+                                </div>
+
+                                <div class="dialogue-de">
+                                    ${line.de}
+                                </div>
+
+                                <div class="dialogue-pron">
+                                    النطق: ${line.pron}
+                                </div>
+
+                                <div class="dialogue-ar">
+                                    ${line.ar}
+                                </div>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                class="speak"
+                                aria-label="تشغيل الجملة"
+                                onclick="speakGerman(${JSON.stringify(line.de)})">
+                                🔊
+                            </button>
+
+                        </div>
+
+                    `).join("")}
+
+                    </div>
+
+                </div>
+            </details>
+
+
+            <label style="
+                display:flex;
+                gap:10px;
+                align-items:center;
+                margin-top:15px;
+                font-weight:700;
+            ">
+
+                <input
+                    type="checkbox"
+                    class="lesson-check"
+                    data-lesson="${lesson.number}"
+                    onchange="updateProgress()">
+
+                أنهيت هذا الدرس
+
+            </label>
+
+        </div>
+        `;
+
+        book.appendChild(card);
+
+    });
+
+    restoreProgress();
+    updateProgress();
 }
 
-/* ---- BOŞLUK DOLDURMA ---- */
-function buildClozeOptions(word, pool, seed){
-  const distractors = seededShuffle(pool.filter(w=>w.de!==word.de), seed).slice(0,3).map(w=>w.de);
-  const opts = seededShuffle([word.de, ...distractors], seed+1);
-  return opts;
-}
-function renderCloze(s){
-  const words = s.order;
-  if(s.idx >= words.length) return renderPassSummary(s);
-  const w = words[s.idx];
-  const [sentDe] = exampleFor(w);
-  const blanked = sentDe.replace(new RegExp(w.de,'i'), '____');
-  if(!s.mcOptions || s.mcOptions._for!==w.de){
-    const opts = buildClozeOptions(w, s.mod.words, s.seed+s.idx);
-    s.mcOptions = opts; s.mcOptions._for = w.de;
-    s.mcSelected = null; s.mcResolved=false;
-  }
-  const optsHtml = s.mcOptions.map(o=>{
-    let cls='';
-    if(s.mcResolved){
-      if(o===w.de) cls='correct';
-      else if(o===s.mcSelected) cls='wrong';
-    }
-    return `<div class="mc-opt ${cls} ${s.mcResolved?'disabled':''}" data-opt="${o}">${o}</div>`;
-  }).join('');
-  return `
-  <div class="stage-card">
-    <span class="hint">Cümledeki boşluğa uygun fiili seç</span>
-    <div class="word-de" style="font-size:22px;">${blanked}</div>
-    <div class="word-tr" style="font-size:14px;">(${w.tr[0]})</div>
-    <div class="mc-grid">${optsHtml}</div>
-    <div class="counter">${s.idx+1} / ${words.length}</div>
-    ${s.mcResolved? '<div class="btn-row"><button class="btn btn-primary" id="clozeNext">Devam et</button></div>':''}
-  </div>`;
-}
-function attachCloze(){
-  document.querySelectorAll('.mc-opt').forEach(el=>{
-    el.onclick = ()=>{
-      if(session.mcResolved) return;
-      session.mcSelected = el.dataset.opt;
-      session.mcResolved = true;
-      const w = session.order[session.idx];
-      if(session.mcSelected===w.de) session.correctCount++; else session.wrongCount++;
-      render();
-    };
-  });
-  const nxt = document.getElementById('clozeNext');
-  if(nxt) nxt.onclick = ()=>{
-    session.idx++; session.mcOptions=null;
-    render();
-  };
-}
-
-/* ---- ÖRNEKLER ---- */
-function renderExamples(s){
-  const words = s.order;
-  if(s.idx >= words.length) return renderPassSummary(s);
-  const w = words[s.idx];
-  const [de,tr] = exampleFor(w);
-  return `
-  <div class="stage-card">
-    <span class="hint">Kelimenin cümle içindeki kullanımını incele</span>
-    <div class="word-de" style="font-size:26px;">${w.de}</div>
-    <div class="word-tr">${w.tr.join(' / ')}</div>
-    <div class="divider-line"></div>
-    <div class="example-block">
-      <div class="example-de">${de}</div>
-      <div class="example-tr">${tr}</div>
-    </div>
-    <div class="counter">${s.idx+1} / ${words.length}</div>
-    <div class="btn-row"><button class="btn btn-primary" id="exNext">${s.idx>=words.length-1?'Bitir':'Sonraki'}</button></div>
-  </div>`;
-}
-function attachExamples(){
-  const b = document.getElementById('exNext');
-  if(b) b.onclick = ()=>{
-    if(session.idx >= session.order.length-1){ completeStep(); return; }
-    session.idx++; render();
-  };
-}
-
-/* ---- MİNİ TEST ---- */
-function renderMiniTest(s){
-  const words = s.order;
-  if(s.idx >= words.length){
-    const total = words.length;
-    const pct = Math.round((s.correctCount/total)*100);
-    const passed = pct>=70;
-    return `
-    <div class="stage-card">
-      <h2 style="font-size:22px;">Mini test sonucu</h2>
-      <div class="score-tag" style="color:${passed?'var(--green)':'var(--coral)'}">${s.correctCount}/${total} doğru (%${pct})</div>
-      <p class="hint">${passed? 'Bu tekrarı başarıyla tamamladın.' : 'Başarı eşiği %70. Bu mini testi tekrar dene.'}</p>
-      <div class="btn-row"><button class="btn btn-primary" id="testContinue">${passed?'Devam et':'Tekrar dene'}</button></div>
-    </div>`;
-  }
-  const w = words[s.idx];
-  if(!s.mcOptions || s.mcOptions._for!==w.de){
-    const distractors = seededShuffle(s.mod.words.filter(x=>x.de!==w.de), s.seed+s.idx+50).slice(0,3);
-    const opts = seededShuffle([w, ...distractors], s.seed+s.idx+51).map(x=>x.tr[0]);
-    s.mcOptions = opts; s.mcOptions._for = w.de; s.mcOptions._correct = w.tr[0];
-    s.mcSelected=null; s.mcResolved=false;
-  }
-  const optsHtml = s.mcOptions.map(o=>{
-    let cls='';
-    if(s.mcResolved){
-      if(o===s.mcOptions._correct) cls='correct';
-      else if(o===s.mcSelected) cls='wrong';
-    }
-    return `<div class="mc-opt ${cls} ${s.mcResolved?'disabled':''}" data-opt="${o}">${o}</div>`;
-  }).join('');
-  return `
-  <div class="stage-card">
-    <span class="hint">Doğru Türkçe karşılığı seç</span>
-    <div class="word-de">${w.de}</div>
-    <div class="mc-grid">${optsHtml}</div>
-    <div class="counter">${s.idx+1} / ${words.length} &nbsp;·&nbsp; Doğru: ${s.correctCount}</div>
-    ${s.mcResolved? '<div class="btn-row"><button class="btn btn-primary" id="testNext">Devam et</button></div>':''}
-  </div>`;
-}
-function attachMiniTest(){
-  document.querySelectorAll('.mc-opt').forEach(el=>{
-    el.onclick = ()=>{
-      if(session.mcResolved) return;
-      session.mcSelected = el.dataset.opt;
-      session.mcResolved = true;
-      if(session.mcSelected===session.mcOptions._correct) session.correctCount++; else session.wrongCount++;
-      render();
-    };
-  });
-  const nxt = document.getElementById('testNext');
-  if(nxt) nxt.onclick = ()=>{ session.idx++; session.mcOptions=null; render(); };
-  const cont = document.getElementById('testContinue');
-  if(cont) cont.onclick = ()=>{
-    const total = session.order.length;
-    const pct = Math.round((session.correctCount/total)*100);
-    if(pct>=70){ completeStep(); }
-    else {
-      // aynı tekrarın mini testini yeniden dene
-      session.idx=0; session.correctCount=0; session.wrongCount=0; session.mcOptions=null;
-      render();
-    }
-  };
-}
-
-function attachLessonEvents(){
-  const back = document.getElementById('backBtn');
-  if(back) back.onclick = goList;
-  const s = session;
-  switch(STAGE_TYPES[s.stageType]){
-    case 'HÖM': attachHOM(); break;
-    case 'TAHMİN': (s.idx>=s.order.length)?attachPassSummary():attachGuess(s.rep%2===0?'de2tr':'tr2de'); break;
-    case 'TERS': (s.idx>=s.order.length)?attachPassSummary():attachGuess(s.rep%2===0?'tr2de':'de2tr'); break;
-    case 'EŞLEŞTİRME': attachMatch(); break;
-    case 'BOŞLUK DOLDURMA': (s.idx>=s.order.length)?attachPassSummary():attachCloze(); break;
-    case 'ÖRNEKLER': attachExamples(); break;
-    case 'MİNİ TEST': attachMiniTest(); break;
-  }
-}
-
-/* ---------------- MODÜL TAMAMLANDI ---------------- */
-function renderModuleComplete(){
-  const mod = MODULES[CUR_MODULE];
-  const nextExists = CUR_MODULE < MODULES.length-1;
-  return `
-  <div class="complete-wrap">
-    <span class="eyebrow">Modül tamamlandı</span>
-    <h2>${moduleLabel(mod,CUR_MODULE)} ✓</h2>
-    <p>${mod.words.length} kelimeyi 14 farklı tekrar döngüsünden geçirdin. ${nextExists?'Bir sonraki modül artık açık.':'Tüm modülleri tamamladın!'}</p>
-    <div class="btn-row">
-      <button class="btn btn-ghost" id="reviewBtn">Bu modülü tekrar incele</button>
-      ${nextExists? '<button class="btn btn-primary" id="nextModBtn">Sonraki modüle geç</button>' : ''}
-    </div>
-  </div>`;
-}
-function attachCompleteEvents(){
-  const rev = document.getElementById('reviewBtn');
-  if(rev) rev.onclick = ()=>{ SCREEN='list'; render(); };
-  const nxt = document.getElementById('nextModBtn');
-  if(nxt) nxt.onclick = ()=>{ CUR_MODULE++; SCREEN='list'; render(); };
-}
 
 /* =========================================================
-   BAŞLAT
+   EXTRA VOCAB SECTION
    ========================================================= */
-(async function init(){
-  await loadProgress();
-  SCREEN = 'list';
-  render();
-})();
+
+function renderExtraVocabulary(){
+
+    const card = document.createElement("article");
+
+    card.className = "card";
+
+    card.innerHTML = `
+
+        <h2>❓ كلمات السؤال والمفردات الأساسية</h2>
+
+        <div class="vocab">
+
+        ${extraVocabulary.map(word => `
+
+            <div class="word searchable"
+                 data-search="${escapeHtml(
+                     word.de+" "+word.ar+" "+word.pron
+                 )}">
+
+                <div class="word-main">
+
+                    <div>
+
+                        <div class="german">
+                            ${word.de}
+                        </div>
+
+                        <div class="pron">
+                            النطق: ${word.pron}
+                        </div>
+
+                        <div class="meaning">
+                            ${word.ar}
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="speak"
+                        onclick="speakGerman(${JSON.stringify(word.de)})">
+                        🔊
+                    </button>
+
+                </div>
+
+                <div class="example">
+
+                    <div class="example-de">
+                        ${word.ex}
+                    </div>
+
+                    <div class="example-pron">
+                        النطق: ${word.exPron}
+                    </div>
+
+                    <div class="example-ar">
+                        ${word.exAr}
+                    </div>
+
+                </div>
+
+            </div>
+
+        `).join("")}
+
+        </div>
+    `;
+
+    book.appendChild(card);
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+document.getElementById("search").addEventListener("input",function(){
+
+    const query = this.value.trim().toLowerCase();
+
+    document.querySelectorAll(".searchable").forEach(item => {
+
+        const text =
+            item.dataset.search.toLowerCase();
+
+        item.classList.toggle(
+            "hidden",
+            query !== "" && !text.includes(query)
+        );
+
+    });
+
+});
+
+
+/* =========================================================
+   LEVEL BUTTONS
+   ========================================================= */
+
+document.querySelectorAll(".level-btn").forEach(button => {
+
+    button.addEventListener("click",function(){
+
+        document.querySelectorAll(".level-btn")
+            .forEach(b => b.classList.remove("active"));
+
+        this.classList.add("active");
+
+        renderLessons();
+
+        if(this.dataset.level === "all"){
+            renderExtraVocabulary();
+        }
+
+    });
+
+});
+
+
+/* =========================================================
+   PROGRESS
+   ========================================================= */
+
+function updateProgress(){
+
+    const checks =
+        document.querySelectorAll(".lesson-check");
+
+    const completed =
+        Array.from(checks).filter(c => c.checked).length;
+
+    const total = lessons.length;
+
+    const percent =
+        total ? Math.round(completed / total * 100) : 0;
+
+    document.getElementById("progressBar").style.width =
+        percent + "%";
+
+    document.getElementById("progressText").textContent =
+        percent + "%";
+
+    const state = {};
+
+    document.querySelectorAll(".lesson-check").forEach(check => {
+        state[check.dataset.lesson] = check.checked;
+    });
+
+    localStorage.setItem(
+        "deutsch_progress",
+        JSON.stringify(state)
+    );
+}
+
+
+function restoreProgress(){
+
+    let state = {};
+
+    try{
+        state =
+            JSON.parse(
+                localStorage.getItem("deutsch_progress") || "{}"
+            );
+    }catch(e){
+        state = {};
+    }
+
+    document.querySelectorAll(".lesson-check").forEach(check => {
+
+        check.checked =
+            state[check.dataset.lesson] === true;
+
+    });
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+   ========================================================= */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+renderLessons();
+renderExtraVocabulary();
+
+
+/* =========================================================
+   IMPORTANT iOS AUDIO INITIALIZATION
+   ========================================================= */
+
+/*
+   لا نحاول تشغيل الصوت تلقائيًا عند فتح الصفحة.
+   iPhone/Safari يحتاج تفاعل المستخدم مع الزر.
+*/
+
+/*
+   عند مغادرة الصفحة نوقف أي كلام جارٍ.
+*/
+
+window.addEventListener("pagehide",function(){
+
+    if("speechSynthesis" in window){
+        window.speechSynthesis.cancel();
+    }
+
+});
+
 </script>
+
 </body>
 </html>
